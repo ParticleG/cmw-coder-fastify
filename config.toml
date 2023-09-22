@@ -1,0 +1,34 @@
+# This is the config for cmw-coder-fastify
+
+endpoint = "http://10.113.36.104"
+
+[promptExtractor]
+contextLimit = 1500
+
+[promptProcessor]
+stopTokens = [
+    "<fim_pad>",
+    "<|endoftext|>",
+]
+suggestionCount = 1
+temperature = 0.2
+
+[promptProcessor.maxNewTokens]
+line = 60
+snippet = 512
+
+[promptProcessor.separateTokens]
+end = "<fim_suffix>"
+middle = "<fim_middle>"
+start = "<fim_prefix>"
+
+[server]
+host = "localhost"
+port = 3000
+
+[suggestionProcessor]
+stopTokens = [
+    "<fim_pad>",
+    "<|endoftext|>",
+    "\n}",
+]

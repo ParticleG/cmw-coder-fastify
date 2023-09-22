@@ -1,0 +1,273 @@
+import { promises } from 'fs';
+import { basename, dirname } from 'path';
+
+import {
+  IGNORE_COMMON_WORD,
+  IGNORE_COMWARE_INTERNAL,
+  IGNORE_RESERVED_KEYWORDS,
+} from 'components/PromptExtractor/constants';
+import {
+  PromptComponents,
+  PromptElement,
+  PromptType,
+  RelativeDefinition,
+  SimilarSnippet,
+  SimilarSnippetConfig,
+} from 'components/PromptExtractor/types';
+import {
+  getAllOtherTabContents,
+  getMostSimilarSnippetStartLine,
+  getRelativePath,
+  separateTextByLine,
+  tokenize,
+} from 'components/PromptExtractor/utils';
+
+import { SymbolInfo } from 'types/SymbolInfo';
+import { TextDocument } from 'types/TextDocument';
+import { Position } from 'types/vscode/position';
+import { Range } from 'types/vscode/range';
+
+const { readFile } = promises;
+
+export class PromptExtractor {
+  private readonly _charLimit: number;
+  private _document: TextDocument;
+  private readonly _position: Position;
+  private _similarSnippetConfig: SimilarSnippetConfig = {
+    contextLines: 30,
+    limit: 5,
+    minScore: 0.25,
+  };
+
+  constructor(document: TextDocument, position: Position, charLimit: number) {
+    this._charLimit = charLimit;
+    this._document = document;
+    this._position = position;
+  }
+
+  async getPromptComp(
+    openedTabs: string[],
+    symbols: SymbolInfo[],
+    similarSnippetCount = 1,
+  ): Promise<PromptComponents> {
+    const prefixElements = Array<PromptElement>();
+    const result: PromptComponents = {
+      reponame: '',
+      filename: '',
+      prefix: '',
+      suffix: '',
+    };
+
+    prefixElements.push({
+      type: PromptType.LanguageMarker,
+      priority: 1,
+      value: `Language: ${this._document.languageId}`,
+    });
+
+    const relativePath = getRelativePath(this._document.fileName);
+    result.reponame = dirname(relativePath);
+    result.filename = basename(relativePath);
+
+    //? Combine async functions to improve performance
+    const [allMostSimilarSnippets, relativeDefinitions] = await Promise.all([
+      this._getSimilarSnippets(openedTabs),
+      this._getRelativeDefinitions(symbols),
+    ]);
+
+    const mostSimilarSnippets = allMostSimilarSnippets
+      .slice(0, similarSnippetCount)
+      .filter(
+        (mostSimilarSnippet) =>
+          mostSimilarSnippet.score > this._similarSnippetConfig.minScore,
+      );
+    // console.log(mostSimilarSnippets);
+    if (mostSimilarSnippets.length) {
+      prefixElements.push({
+        type: PromptType.SimilarFile,
+        priority: 3,
+        value:
+          mostSimilarSnippets
+            // .map(
+            //   (mostSimilarSnippet) =>
+            //     `Consider this similar snippet from ${getRelativePath(
+            //       mostSimilarSnippet.uri.path
+            //     )}: \n${mostSimilarSnippet.content}`
+            // )
+            .map((mostSimilarSnippet) => mostSimilarSnippet.content)
+            .join('\n') + '\n',
+      });
+    }
+
+    if (relativeDefinitions.length) {
+      prefixElements.push({
+        type: PromptType.ImportedFile,
+        priority: 4,
+        value:
+          relativeDefinitions
+            // .map(
+            //   (relativeDefinition) =>
+            //     `Consider this definition from ${getRelativePath(
+            //       relativeDefinition.uri.path
+            //     )}: \n${relativeDefinition.content}`
+            // )
+            .map((relativeDefinition) => relativeDefinition.content)
+            .join('\n') + '\n',
+      });
+    }
+
+    // console.log(relativeDefinitions);
+
+    const { after, before } = this._getCursorContext();
+
+    prefixElements.push({
+      type: PromptType.BeforeCursor,
+      priority: 5,
+      value: before,
+    });
+
+    result.prefix = prefixElements
+      .sort((first, second) => first.priority - second.priority)
+      .map((prefixElement) => prefixElement.value)
+      .join('\n\n');
+
+    result.suffix = after;
+
+    console.log(prefixElements);
+
+    return result;
+  }
+
+  private async _getRelativeDefinitions(
+    symbols: SymbolInfo[],
+  ): Promise<RelativeDefinition[]> {
+    return Promise.all(
+      symbols.map(async ({ path, startLine, endLine }) => ({
+        path,
+        content: (
+          await readFile(path, {
+            flag: 'r',
+          })
+        )
+          .toString()
+          .split('\n')
+          .slice(startLine, endLine + 1)
+          .join('\n'),
+      })),
+    );
+  }
+
+  private async _getSimilarSnippets(
+    openedTabs: string[],
+  ): Promise<SimilarSnippet[]> {
+    const currentDocumentLines = this._spliceCurrentDocumentLines();
+
+    const tabLines = (await getAllOtherTabContents(openedTabs)).map(
+      (tabContent) => ({
+        path: tabContent.path,
+        lines: separateTextByLine(tabContent.content, true),
+      }),
+    );
+    tabLines.push(
+      {
+        path: this._document.fileName,
+        lines: currentDocumentLines.before,
+      },
+      {
+        path: this._document.fileName,
+        lines: currentDocumentLines.after,
+      },
+    );
+
+    const mostSimilarSnippets = Array<SimilarSnippet>();
+
+    tabLines.forEach(({ path, lines }) => {
+      const { score, startLine } = getMostSimilarSnippetStartLine(
+        lines.map((line) =>
+          tokenize(line, [
+            IGNORE_RESERVED_KEYWORDS,
+            IGNORE_COMMON_WORD,
+            IGNORE_COMWARE_INTERNAL,
+          ]),
+        ),
+        tokenize(currentDocumentLines.spliced.join('\n'), [
+          IGNORE_RESERVED_KEYWORDS,
+          IGNORE_COMMON_WORD,
+          IGNORE_COMWARE_INTERNAL,
+        ]),
+        currentDocumentLines.spliced.length,
+      );
+      const currentMostSimilarSnippet: SimilarSnippet = {
+        path,
+        score: score,
+        content: lines
+          .slice(
+            startLine,
+            startLine + currentDocumentLines.spliced.length + 10,
+          )
+          .join('\n'),
+      };
+
+      mostSimilarSnippets.push(currentMostSimilarSnippet);
+    });
+
+    return mostSimilarSnippets
+      .sort((first, second) => first.score - second.score)
+      .reverse()
+      .slice(0, this._similarSnippetConfig.limit);
+  }
+
+  private _getCursorContext(): {
+    after: string;
+    before: string;
+  } {
+    const offset = this._document.offsetAt(this._position);
+    const beforeStartOffset = Math.max(0, offset - this._charLimit);
+    const afterEndOffset = offset + this._charLimit;
+    const beforeStart = this._document.positionAt(beforeStartOffset);
+    const afterEnd = this._document.positionAt(afterEndOffset);
+
+    return {
+      before: this._document.getText(
+        new Range(
+          beforeStart.line,
+          beforeStart.character,
+          this._position.line,
+          this._position.character,
+        ),
+      ),
+      after: this._document.getText(
+        new Range(
+          this._position.line,
+          this._position.character,
+          afterEnd.line,
+          afterEnd.character,
+        ),
+      ),
+    };
+  }
+
+  private _spliceCurrentDocumentLines(): {
+    spliced: string[];
+    before: string[];
+    after: string[];
+  } {
+    const rawText = this._document.getText();
+    const beforeCursorLines = separateTextByLine(
+      rawText.slice(0, this._document.offsetAt(this._position)),
+      true,
+    );
+
+    const splicedBeforeCursorLines = beforeCursorLines.splice(
+      -this._similarSnippetConfig.contextLines,
+    );
+
+    return {
+      spliced: splicedBeforeCursorLines,
+      before: beforeCursorLines,
+      after: separateTextByLine(
+        rawText.slice(this._document.offsetAt(this._position)),
+        true,
+      ),
+    };
+  }
+}
