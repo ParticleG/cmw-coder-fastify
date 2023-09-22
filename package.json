@@ -5,8 +5,8 @@
   "main": "server.ts",
   "scripts": {
     "dev": "tsx watch server.ts",
-    "build:ts": "tsc",
-    "watch:ts": "tsc -w"
+    "build": "node build.mjs",
+    "watch": "tsc -w"
   },
   "keywords": [],
   "author": "ParticleG",
@@ -32,6 +32,7 @@
     "esbuild": "^0.19.3",
     "esbuild-plugin-tsc": "^0.4.0",
     "fastify-tsconfig": "^2.0.0",
+    "tiny-glob": "^0.2.9",
     "ts-node": "^10.9.1",
     "tsx": "^3.12.10",
     "typescript": "^5.2.2"

@@ -25,12 +25,10 @@ import {
 import { SymbolInfo } from 'types/SymbolInfo';
 import { TextDocument } from 'types/TextDocument';
 import { Position } from 'types/vscode/position';
-import { Range } from 'types/vscode/range';
 
 const { readFile } = promises;
 
 export class PromptExtractor {
-  private readonly _charLimit: number;
   private _document: TextDocument;
   private readonly _position: Position;
   private _similarSnippetConfig: SimilarSnippetConfig = {
@@ -39,8 +37,7 @@ export class PromptExtractor {
     minScore: 0.25,
   };
 
-  constructor(document: TextDocument, position: Position, charLimit: number) {
-    this._charLimit = charLimit;
+  constructor(document: TextDocument, position: Position) {
     this._document = document;
     this._position = position;
   }
@@ -48,6 +45,8 @@ export class PromptExtractor {
   async getPromptComp(
     openedTabs: string[],
     symbols: SymbolInfo[],
+    before: string,
+    after: string,
     similarSnippetCount = 1,
   ): Promise<PromptComponents> {
     const prefixElements = Array<PromptElement>();
@@ -116,8 +115,6 @@ export class PromptExtractor {
     }
 
     // console.log(relativeDefinitions);
-
-    const { after, before } = this._getCursorContext();
 
     prefixElements.push({
       type: PromptType.BeforeCursor,
@@ -214,36 +211,6 @@ export class PromptExtractor {
       .sort((first, second) => first.score - second.score)
       .reverse()
       .slice(0, this._similarSnippetConfig.limit);
-  }
-
-  private _getCursorContext(): {
-    after: string;
-    before: string;
-  } {
-    const offset = this._document.offsetAt(this._position);
-    const beforeStartOffset = Math.max(0, offset - this._charLimit);
-    const afterEndOffset = offset + this._charLimit;
-    const beforeStart = this._document.positionAt(beforeStartOffset);
-    const afterEnd = this._document.positionAt(afterEndOffset);
-
-    return {
-      before: this._document.getText(
-        new Range(
-          beforeStart.line,
-          beforeStart.character,
-          this._position.line,
-          this._position.character,
-        ),
-      ),
-      after: this._document.getText(
-        new Range(
-          this._position.line,
-          this._position.character,
-          afterEnd.line,
-          afterEnd.character,
-        ),
-      ),
-    };
   }
 
   private _spliceCurrentDocumentLines(): {
