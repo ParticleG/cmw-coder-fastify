@@ -45,8 +45,8 @@ export class PromptExtractor {
   async getPromptComp(
     openedTabs: string[],
     symbols: SymbolInfo[],
-    before: string,
-    after: string,
+    beforeCursor: string,
+    afterCursor: string,
     similarSnippetCount = 1,
   ): Promise<PromptComponents> {
     const prefixElements = Array<PromptElement>();
@@ -69,7 +69,7 @@ export class PromptExtractor {
 
     //? Combine async functions to improve performance
     const [allMostSimilarSnippets, relativeDefinitions] = await Promise.all([
-      this._getSimilarSnippets(openedTabs),
+      this._getSimilarSnippets(beforeCursor, afterCursor, openedTabs),
       this._getRelativeDefinitions(symbols),
     ]);
 
@@ -119,7 +119,7 @@ export class PromptExtractor {
     prefixElements.push({
       type: PromptType.BeforeCursor,
       priority: 5,
-      value: before,
+      value: beforeCursor,
     });
 
     result.prefix = prefixElements
@@ -127,7 +127,7 @@ export class PromptExtractor {
       .map((prefixElement) => prefixElement.value)
       .join('\n\n');
 
-    result.suffix = after;
+    result.suffix = afterCursor;
 
     console.log(prefixElements);
 
@@ -154,9 +154,14 @@ export class PromptExtractor {
   }
 
   private async _getSimilarSnippets(
+    beforeCursor: string,
+    afterCursor: string,
     openedTabs: string[],
   ): Promise<SimilarSnippet[]> {
-    const currentDocumentLines = this._spliceCurrentDocumentLines();
+    const currentDocumentLines = this._getRemainedContents(
+      beforeCursor,
+      afterCursor,
+    );
 
     const tabLines = (await getAllOtherTabContents(openedTabs)).map(
       (tabContent) => ({
@@ -186,12 +191,12 @@ export class PromptExtractor {
             IGNORE_COMWARE_INTERNAL,
           ]),
         ),
-        tokenize(currentDocumentLines.spliced.join('\n'), [
+        tokenize(beforeCursor, [
           IGNORE_RESERVED_KEYWORDS,
           IGNORE_COMMON_WORD,
           IGNORE_COMWARE_INTERNAL,
         ]),
-        currentDocumentLines.spliced.length,
+        separateTextByLine(beforeCursor, true).length,
       );
       const currentMostSimilarSnippet: SimilarSnippet = {
         path,
@@ -199,7 +204,7 @@ export class PromptExtractor {
         content: lines
           .slice(
             startLine,
-            startLine + currentDocumentLines.spliced.length + 10,
+            startLine + separateTextByLine(beforeCursor, true).length + 10,
           )
           .join('\n'),
       };
@@ -213,26 +218,27 @@ export class PromptExtractor {
       .slice(0, this._similarSnippetConfig.limit);
   }
 
-  private _spliceCurrentDocumentLines(): {
-    spliced: string[];
+  private _getRemainedContents(
+    beforeCursor: string,
+    afterCursor: string,
+  ): {
     before: string[];
     after: string[];
   } {
     const rawText = this._document.getText();
-    const beforeCursorLines = separateTextByLine(
-      rawText.slice(0, this._document.offsetAt(this._position)),
-      true,
-    );
-
-    const splicedBeforeCursorLines = beforeCursorLines.splice(
-      -this._similarSnippetConfig.contextLines,
-    );
 
     return {
-      spliced: splicedBeforeCursorLines,
-      before: beforeCursorLines,
+      before: separateTextByLine(
+        rawText.slice(
+          0,
+          this._document.offsetAt(this._position) - beforeCursor.length,
+        ),
+        true,
+      ),
       after: separateTextByLine(
-        rawText.slice(this._document.offsetAt(this._position)),
+        rawText.slice(
+          this._document.offsetAt(this._position) + afterCursor.length,
+        ),
         true,
       ),
     };

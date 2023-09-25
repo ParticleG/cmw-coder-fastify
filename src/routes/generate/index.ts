@@ -80,20 +80,19 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     '/',
     { schema: generateSchema },
     async (request) => {
-      console.log(request.body);
       const { info } = request.body;
-      const {
-        currentFilePath,
-        cursorRange,
-        openedTabs,
-        symbols,
-        version,
-        prefix,
-        suffix,
-      } = parseEditorInfo(info);
-      reactionReporter.updateCursor(cursorRange);
-      reactionReporter.updateVersion(version);
       try {
+        const {
+          currentFilePath,
+          cursorRange,
+          openedTabs,
+          symbols,
+          version,
+          prefix,
+          suffix,
+        } = parseEditorInfo(info);
+        reactionReporter.updateCursor(cursorRange);
+        reactionReporter.updateVersion(version);
         const promptExtractor = new PromptExtractor(
           new TextDocument(currentFilePath),
           cursorRange.start,
