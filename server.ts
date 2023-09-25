@@ -39,7 +39,7 @@ async function main() {
 }
 
 main().catch((errors) => {
-  if (errors instanceof Array<ErrorObject>) {
+  if (errors instanceof Array) {
     errors.forEach((error: ErrorObject) => {
       Logger.error(
         'Config',
