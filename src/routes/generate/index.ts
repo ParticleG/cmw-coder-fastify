@@ -1,4 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
+import { decode, encode } from 'iconv-lite';
 
 import reactionReporter from 'components/ReactionReporter';
 import { PromptExtractor } from 'components/PromptExtractor';
@@ -11,7 +12,7 @@ import { SymbolInfo } from 'types/SymbolInfo';
 
 const parseEditorInfo = (rawText: string) => {
   const matchResult = rawText.match(
-    /^path="(.*?)";project="(.*?)";tabs="(.*?)";type="(.*?)";version="(.*?)";symbols="(.*?)";prefix="(.*?)";suffix="(.*?)"$/,
+    /^cursor="(.*?)";path="(.*?)";project="(.*?)";tabs="(.*?)";type="(.*?)";version="(.*?)";symbols="(.*?)";prefix="(.*?)";suffix="(.*?)"$/,
   );
   if (!matchResult) {
     throw new Error('Invalid editor info format');
@@ -36,7 +37,7 @@ const parseEditorInfo = (rawText: string) => {
   if (!cursorMatches) {
     throw new Error('Invalid cursor format');
   }
-  const [, startLine, startCharacter, endLine, endCharacter, ,] = [
+  const [, startLine, startCharacter, endLine, endCharacter] = [
     ...cursorMatches,
   ];
 
@@ -57,8 +58,8 @@ const parseEditorInfo = (rawText: string) => {
       : [];
 
   return {
-    currentFilePath,
-    projectFolder,
+    currentFilePath: currentFilePath.replace(/\\\\/g, '/'),
+    projectFolder: projectFolder.replace(/\\\\/g, '/'),
     openedTabs: tabsString.match(/.*?\.([ch])/g) ?? [],
     cursorRange: new Range(
       parseInt(startLine),
@@ -69,18 +70,22 @@ const parseEditorInfo = (rawText: string) => {
     completionType: parseInt(completionTypeString) > 0 ? 'snippet' : 'line',
     version,
     symbols,
-    prefix,
-    suffix,
+    prefix: prefix.replace(/\\\\r\\\\n/g, '\r\n').replace(/\\=/g, '='),
+    suffix: suffix.replace(/\\\\r\\\\n/g, '\r\n').replace(/\\=/g, '='),
   };
 };
 
 export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
   const promptProcessor = new PromptProcessor(fastify.config);
   fastify.post<generateType>(
-    '/',
+    '/generate',
     { schema: generateSchema },
     async (request) => {
-      const { info } = request.body;
+      const decodedInfo = decode(
+        Buffer.from(request.body.info, 'base64'),
+        'gb2312',
+      );
+      console.log(decodedInfo);
       try {
         const {
           currentFilePath,
@@ -90,7 +95,8 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           version,
           prefix,
           suffix,
-        } = parseEditorInfo(info);
+        } = parseEditorInfo(decodedInfo);
+        console.log(parseEditorInfo(decodedInfo));
         reactionReporter.updateCursor(cursorRange);
         reactionReporter.updateVersion(version);
         const promptExtractor = new PromptExtractor(
@@ -105,7 +111,10 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
         );
         const result = await promptProcessor.process(prompt);
         if (result) {
-          return { result: 'success', content: result };
+          return {
+            result: 'success',
+            content: encode(result, 'gb2312').toString('base64'),
+          };
         } else {
           return { result: 'failure' };
         }

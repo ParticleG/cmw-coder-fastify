@@ -1,9 +1,13 @@
 import { FastifyPluginAsync } from 'fastify';
 
+import SensiblePlugin from 'plugins/sensible';
+import GenerateRoute from 'routes/generate';
+import RootRoute from 'routes/root';
+
 const app: FastifyPluginAsync = async (fastify, opts): Promise<void> => {
-  fastify.register(import('plugins/sensible'), opts);
-  fastify.register(import('routes/generate'), opts);
-  fastify.register(import('routes/root'), opts);
+  fastify.register(SensiblePlugin, opts);
+  fastify.register(GenerateRoute, opts);
+  fastify.register(RootRoute, opts);
 };
 
 export default app;

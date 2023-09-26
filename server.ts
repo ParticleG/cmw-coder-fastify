@@ -1,6 +1,8 @@
 import { ErrorObject } from 'ajv/lib/types';
 import Fastify from 'fastify';
 
+import App from 'app/src/app';
+import Config from 'types/config';
 import { Logger, LogLevel } from 'types/Logger';
 
 const fastify = Fastify({
@@ -12,9 +14,9 @@ const fastify = Fastify({
 async function main() {
   Logger.info('Config', `Loading server configs...`);
 
-  await fastify.register(import('types/config'));
+  await fastify.register(Config);
 
-  fastify.register(import('app/src/app'), fastify.config);
+  fastify.register(App, fastify.config);
   fastify.listen(
     {
       host: fastify.config.server.host,
@@ -23,7 +25,7 @@ async function main() {
     (err: any) => {
       if (err) {
         fastify.log.error(err);
-        process.exit(1);
+        fastify.close();
       }
     },
   );
