@@ -106,7 +106,9 @@ export class PromptProcessor {
     // TODO: Replace Date Created if needed.
     console.log(processed[0]);
 
-    return [
+    return processed.join('\n');
+
+    /*return [
       ...processed,
       ...processed.map((generatedSuggestion) =>
         generatedSuggestion
@@ -118,6 +120,6 @@ export class PromptProcessor {
           )
           .join(''),
       ),
-    ].join('\n');
+    ].join('\n');*/
   }
 }
