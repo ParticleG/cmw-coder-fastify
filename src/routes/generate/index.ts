@@ -81,8 +81,9 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     '/generate',
     { schema: generateSchema },
     async (request) => {
+      const {info, projectId} = request.body;
       const decodedInfo = decode(
-        Buffer.from(request.body.info, 'base64'),
+        Buffer.from(info, 'base64'),
         'gb2312',
       );
       console.log(decodedInfo);
@@ -109,7 +110,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           prefix,
           suffix,
         );
-        const results = await promptProcessor.process(prompt, prefix);
+        const results = await promptProcessor.process(prompt, projectId, prefix);
         if (results) {
           return {
             result: 'success',

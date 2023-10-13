@@ -19,6 +19,7 @@ export class PromptProcessor {
 
   async process(
     promptComponents: PromptComponents,
+    projectId: string,
     prefix: string,
   ): Promise<string[] | undefined> {
     const promptString = this._getPromptString(promptComponents);
@@ -54,7 +55,7 @@ export class PromptProcessor {
         generatedSuggestions.push(generated_text.trimStart());
       }
       reactionReporter
-        .reportGeneration(Date.now() - startTime)
+        .reportGeneration(Date.now() - startTime, projectId)
         .catch(console.warn);
       return this._processGeneratedSuggestions(
         promptString,

@@ -80,11 +80,14 @@
 export const generateSchema = {
   body: {
     type: 'object',
-    required: ['info'],
+    required: ['info', 'projectId'],
     properties: {
       info: {
         type: 'string',
       },
+      projectId: {
+        type: 'string'
+      }
     },
   },
 };
@@ -92,5 +95,6 @@ export const generateSchema = {
 export interface generateType {
   Body: {
     info: string;
+    projectId: string;
   };
 }
