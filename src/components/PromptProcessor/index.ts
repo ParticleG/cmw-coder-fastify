@@ -2,7 +2,9 @@ import { createHash } from 'crypto';
 
 import { PromptComponents } from 'components/PromptExtractor/types';
 import { LRUCache } from 'components/PromptProcessor/types';
-import { removeRedundantTokens } from 'components/PromptProcessor/utils';
+import {
+  removeRedundantTokens,
+} from 'components/PromptProcessor/utils';
 import reactionReporter from 'components/ReactionReporter';
 import { ConfigType } from 'types/config';
 import { generate } from 'utils/axios';
@@ -17,7 +19,8 @@ export class PromptProcessor {
 
   async process(
     promptComponents: PromptComponents,
-  ): Promise<string | undefined> {
+    prefix: string,
+  ): Promise<string[] | undefined> {
     const promptString = this._getPromptString(promptComponents);
     const { stopTokens, suggestionCount, temperature } =
       this._config.promptProcessor;
@@ -56,6 +59,7 @@ export class PromptProcessor {
       return this._processGeneratedSuggestions(
         promptString,
         generatedSuggestions,
+        prefix,
       );
     } catch (e) {
       console.warn(e);
@@ -90,7 +94,9 @@ export class PromptProcessor {
   private _processGeneratedSuggestions(
     promptString: string,
     generatedSuggestions: string[],
-  ): string {
+    prefix: string,
+  ): string[] {
+
     const processed = generatedSuggestions
       .map((generatedSuggestion) =>
         generatedSuggestion.substring(0, promptString.length) === promptString
@@ -104,9 +110,9 @@ export class PromptProcessor {
         generatedSuggestion.replace(/\r\n|\n/g, '\\r\\n'),
       );
     // TODO: Replace Date Created if needed.
-    console.log(processed[0]);
+    console.log(processed);
 
-    return processed.join('\n');
+    return processed;
 
     /*return [
       ...processed,

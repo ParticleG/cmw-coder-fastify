@@ -109,11 +109,13 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           prefix,
           suffix,
         );
-        const result = await promptProcessor.process(prompt);
-        if (result) {
+        const results = await promptProcessor.process(prompt, prefix);
+        if (results) {
           return {
             result: 'success',
-            content: encode(result, 'gb2312').toString('base64'),
+            contents: results.map((result) =>
+              encode(result, 'gb2312').toString('base64'),
+            ),
           };
         } else {
           return { result: 'failure' };
