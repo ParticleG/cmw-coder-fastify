@@ -82,7 +82,7 @@ export class PromptExtractor {
     if (mostSimilarSnippets.length) {
       prefixElements.push({
         type: PromptType.SimilarFile,
-        priority: 3,
+        priority: 2,
         value:
           mostSimilarSnippets
             .map((mostSimilarSnippet) => mostSimilarSnippet.content)
@@ -93,7 +93,7 @@ export class PromptExtractor {
     if (relativeDefinitions.length) {
       prefixElements.push({
         type: PromptType.ImportedFile,
-        priority: 4,
+        priority: 3,
         value:
           relativeDefinitions
             .map((relativeDefinition) => relativeDefinition.content)
@@ -105,7 +105,7 @@ export class PromptExtractor {
 
     prefixElements.push({
       type: PromptType.BeforeCursor,
-      priority: 5,
+      priority: 4,
       value: beforeCursor,
     });
 

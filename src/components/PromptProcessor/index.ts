@@ -74,13 +74,13 @@ export class PromptProcessor {
     const result = [];
 
     if (promptComponents.reponame.length) {
-      result.push('<reponame>', promptComponents.reponame);
+      result.push(`<reponame>${promptComponents.reponame}`);
     }
     if (promptComponents.filename.length) {
-      result.push('<filename>', promptComponents.filename);
+      result.push(`<filename>${promptComponents.filename}`);
     }
-    result.push(start, promptComponents.prefix);
-    result.push(end, promptComponents.suffix);
+    result.push(start + promptComponents.prefix);
+    result.push(end + promptComponents.suffix);
     result.push(middle);
     const promptString = result.join('');
 
