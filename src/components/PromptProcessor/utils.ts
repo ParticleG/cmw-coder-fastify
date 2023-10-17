@@ -1,7 +1,10 @@
 // @ts-ignore
-import escapeStringRegexp from 'escape-string-regexp';
+import escapeStringRegexp from "escape-string-regexp";
 
-import { ConfigType } from 'types/config';
+import { ConfigType } from "types/config";
+
+// Start with '//' or '#', or end with '{' or '*/'
+const detectRegex = /^(\/\/|#)|(\{|\*\/)$/;
 
 export const removeRedundantTokens = (config: ConfigType, text: string) => {
   const {
@@ -14,16 +17,6 @@ export const removeRedundantTokens = (config: ConfigType, text: string) => {
   return text.replace(new RegExp(regExp, 'g'), '');
 };
 
-export const checkMultiLine = (fullPrefix: string): boolean => {
-  const lines = fullPrefix.split(/\n|\r\n/);
-  const regex = /(^\/\/|#)|((\{|\*\/)$)/;
-  let lastNotEmptyLine = '';
-  for (let i = lines.length - 1; i >= 0; i--) {
-    const line = lines[i];
-    if (line.trim() !== '') {
-      lastNotEmptyLine = line.trim();
-      break;
-    }
-  }
-  return regex.test(lastNotEmptyLine);
+export const checkMultiLine = (prefix: string): boolean => {
+  return detectRegex.test(prefix.trimEnd().split('\n').at(-1) ?? '');
 };

@@ -97,7 +97,15 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           prefix,
           suffix,
         } = parseEditorInfo(decodedInfo);
-        console.log(parseEditorInfo(decodedInfo));
+        console.log({
+          currentFilePath,
+          cursorRange,
+          openedTabs,
+          symbols,
+          version,
+          prefix,
+          suffix,
+        });
         reactionReporter.updateCursor(cursorRange);
         reactionReporter.updateVersion(version);
         const promptExtractor = new PromptExtractor(

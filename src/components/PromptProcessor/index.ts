@@ -1,3 +1,4 @@
+import 'core-js/actual/array/at';
 import { createHash } from 'crypto';
 
 import { PromptComponents } from 'components/PromptExtractor/types';
@@ -99,7 +100,6 @@ export class PromptProcessor {
     prefix: string,
   ): string[] {
     const isMultiLine = checkMultiLine(prefix);
-
     const processed = generatedSuggestions
       .map((generatedSuggestion) =>
         generatedSuggestion.substring(0, promptString.length) === promptString
@@ -114,25 +114,25 @@ export class PromptProcessor {
       )
       .map(
         (generatedSuggestion) =>
-          (isMultiLine ? '0' : '1') + generatedSuggestion,
+          (isMultiLine ? '1' : '0') + generatedSuggestion,
       );
     // TODO: Replace Date Created if needed.
-    console.log(processed);
+    console.log({ processed });
 
     return processed;
 
     /*return [
-      ...processed,
-      ...processed.map((generatedSuggestion) =>
-        generatedSuggestion
-          .split('\\r\\n')
-          .map((generatedSuggestionLine) =>
-            String(
-              new TextEncoder().encode(generatedSuggestionLine).length,
-            ).padStart(3, '0'),
-          )
-          .join(''),
-      ),
-    ].join('\n');*/
+          ...processed,
+          ...processed.map((generatedSuggestion) =>
+            generatedSuggestion
+              .split('\\r\\n')
+              .map((generatedSuggestionLine) =>
+                String(
+                  new TextEncoder().encode(generatedSuggestionLine).length,
+                ).padStart(3, '0'),
+              )
+              .join(''),
+          ),
+        ].join('\n');*/
   }
 }

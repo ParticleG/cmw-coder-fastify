@@ -1,3 +1,4 @@
+// @ts-ignore
 import chalk from 'chalk';
 import { format } from 'ts-date';
 import * as console from 'console';

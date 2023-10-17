@@ -53,7 +53,7 @@ main().catch((errors) => {
       );
     });
   } else {
-    console.log(errors);
+    console.error(errors);
   }
   fastify.close().then(
     () => Logger.success('Server', 'Successfully closed'),

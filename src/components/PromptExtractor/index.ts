@@ -67,7 +67,6 @@ export class PromptExtractor {
     result.reponame = dirname(relativePath);
     result.filename = basename(relativePath);
 
-    //? Combine async functions to improve performance
     const [allMostSimilarSnippets, relativeDefinitions] = await Promise.all([
       this._getSimilarSnippets(beforeCursor, afterCursor, openedTabs),
       this._getRelativeDefinitions(symbols),
@@ -86,12 +85,6 @@ export class PromptExtractor {
         priority: 3,
         value:
           mostSimilarSnippets
-            // .map(
-            //   (mostSimilarSnippet) =>
-            //     `Consider this similar snippet from ${getRelativePath(
-            //       mostSimilarSnippet.uri.path
-            //     )}: \n${mostSimilarSnippet.content}`
-            // )
             .map((mostSimilarSnippet) => mostSimilarSnippet.content)
             .join('\n') + '\n',
       });
@@ -103,12 +96,6 @@ export class PromptExtractor {
         priority: 4,
         value:
           relativeDefinitions
-            // .map(
-            //   (relativeDefinition) =>
-            //     `Consider this definition from ${getRelativePath(
-            //       relativeDefinition.uri.path
-            //     )}: \n${relativeDefinition.content}`
-            // )
             .map((relativeDefinition) => relativeDefinition.content)
             .join('\n') + '\n',
       });
@@ -129,7 +116,7 @@ export class PromptExtractor {
 
     result.suffix = afterCursor;
 
-    console.log(prefixElements);
+    // console.log(prefixElements);
 
     return result;
   }

@@ -4,7 +4,7 @@ import { takeGeneratedText as reportGeneration} from 'utils/axios';
 class ReactionReporter {
   private _currentCursor: Range = new Range(0, 0, 0, 0);
   private _lastCursor: Range = new Range(0, 0, 0, 0);
-  private _version: string = '0.0.0';
+  private _version: string = 'unknown';
 
   updateCursor(cursor: Range) {
     this._lastCursor = this._currentCursor;
