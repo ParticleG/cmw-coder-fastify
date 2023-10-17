@@ -3,6 +3,7 @@ import { createHash } from 'crypto';
 import { PromptComponents } from 'components/PromptExtractor/types';
 import { LRUCache } from 'components/PromptProcessor/types';
 import {
+  checkMultiLine,
   removeRedundantTokens,
 } from 'components/PromptProcessor/utils';
 import reactionReporter from 'components/ReactionReporter';
@@ -97,6 +98,7 @@ export class PromptProcessor {
     generatedSuggestions: string[],
     prefix: string,
   ): string[] {
+    const isMultiLine = checkMultiLine(prefix);
 
     const processed = generatedSuggestions
       .map((generatedSuggestion) =>
@@ -109,6 +111,10 @@ export class PromptProcessor {
       )
       .map((generatedSuggestion) =>
         generatedSuggestion.replace(/\r\n|\n/g, '\\r\\n'),
+      )
+      .map(
+        (generatedSuggestion) =>
+          (isMultiLine ? '0' : '1') + generatedSuggestion,
       );
     // TODO: Replace Date Created if needed.
     console.log(processed);
