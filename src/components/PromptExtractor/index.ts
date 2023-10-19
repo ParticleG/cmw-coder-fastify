@@ -54,7 +54,7 @@ export class PromptExtractor {
       reponame: '',
       filename: '',
       prefix: '',
-      suffix: '',
+      suffix: afterCursor,
     };
 
     prefixElements.push({
@@ -90,12 +90,39 @@ export class PromptExtractor {
       });
     }
 
+    prefixElements.push({
+      type: PromptType.BeforeCursor,
+      priority: 4,
+      value: beforeCursor,
+    });
+
     if (relativeDefinitions.length) {
+      const remainingCharacters =
+        6000 -
+        result.reponame.length -
+        result.filename.length -
+        result.suffix.length -
+        prefixElements.reduce(
+          (accumulatedCharacters, prefixElement) =>
+            accumulatedCharacters + prefixElement.value.length,
+          0,
+        );
+      let relativeDefinitionsTruncated = Array<RelativeDefinition>();
+      let currentCharacters = 0;
+      for (const relativeDefinition of relativeDefinitions) {
+        if (
+          currentCharacters + relativeDefinition.content.length <=
+          remainingCharacters
+        ) {
+          relativeDefinitionsTruncated.push(relativeDefinition);
+          currentCharacters += relativeDefinition.content.length;
+        }
+      }
       prefixElements.push({
         type: PromptType.ImportedFile,
         priority: 3,
         value:
-          relativeDefinitions
+          relativeDefinitionsTruncated
             .map((relativeDefinition) => relativeDefinition.content)
             .join('\n') + '\n',
       });
@@ -103,21 +130,12 @@ export class PromptExtractor {
 
     // console.log(relativeDefinitions);
 
-    prefixElements.push({
-      type: PromptType.BeforeCursor,
-      priority: 4,
-      value: beforeCursor,
-    });
-
     result.prefix = prefixElements
       .sort((first, second) => first.priority - second.priority)
       .map((prefixElement) => prefixElement.value)
       .join('\n\n');
 
-    result.suffix = afterCursor;
-
     // console.log(prefixElements);
-
     return result;
   }
 
