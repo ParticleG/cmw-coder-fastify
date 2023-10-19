@@ -10,6 +10,7 @@ import {
 import reactionReporter from 'components/ReactionReporter';
 import { ConfigType } from 'types/config';
 import { generate } from 'utils/axios';
+import * as console from 'console';
 
 export class PromptProcessor {
   private _cache = new LRUCache<string>(100);
@@ -25,7 +26,7 @@ export class PromptProcessor {
     prefix: string,
   ): Promise<string[] | undefined> {
     const promptString = this._getPromptString(promptComponents);
-    const { stopTokens, suggestionCount, temperature } =
+    const { maxNewTokens, stopTokens, suggestionCount, temperature } =
       this._config.promptProcessor;
     try {
       const generatedSuggestions: string[] = [];
@@ -41,7 +42,9 @@ export class PromptProcessor {
           best_of: suggestionCount,
           details: true,
           do_sample: true,
-          max_new_tokens: 60,
+          max_new_tokens: checkMultiLine(prefix)
+            ? maxNewTokens.snippet
+            : maxNewTokens.line,
           stop: stopTokens,
           temperature: temperature,
           top_p: 0.95,
@@ -56,6 +59,7 @@ export class PromptProcessor {
       } else {
         generatedSuggestions.push(generated_text.trimStart());
       }
+      console.log({ generatedSuggestions });
       reactionReporter
         .reportGeneration(Date.now() - startTime, projectId)
         .catch(console.warn);
@@ -109,6 +113,7 @@ export class PromptProcessor {
       .map((generatedSuggestion) =>
         removeRedundantTokens(this._config, generatedSuggestion),
       )
+      .filter((generatedSuggestion) => generatedSuggestion.length > 0)
       .map((generatedSuggestion) =>
         generatedSuggestion.replace(/\r\n|\n/g, '\\r\\n'),
       )
