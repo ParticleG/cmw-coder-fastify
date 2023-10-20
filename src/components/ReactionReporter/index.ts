@@ -15,9 +15,9 @@ class ReactionReporter {
     this._version = version;
   }
 
-  async reportGeneration(delay: number, projectId: string) {
+  async reportGeneration(completion: string, delay: number, projectId: string) {
     if (this._lastCursor.start.line !== this._currentCursor.start.line) {
-      await reportGeneration(delay, projectId, this._version);
+      await reportGeneration(completion, delay, projectId, this._version);
     }
   }
 }

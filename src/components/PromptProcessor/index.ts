@@ -54,21 +54,29 @@ export class PromptProcessor {
       if (best_of_sequences && best_of_sequences.length) {
         generatedSuggestions.push(
           ...best_of_sequences.map((bestOfSequence) =>
-            isMultiLine ? bestOfSequence.generated_text : bestOfSequence.generated_text.trimStart(),
+            isMultiLine
+              ? bestOfSequence.generated_text
+              : bestOfSequence.generated_text.trimStart(),
           ),
         );
       } else {
-        generatedSuggestions.push(isMultiLine ? generated_text : generated_text.trimStart());
+        generatedSuggestions.push(
+          isMultiLine ? generated_text : generated_text.trimStart(),
+        );
       }
-      console.log({ generatedSuggestions });
-      reactionReporter
-        .reportGeneration(Date.now() - startTime, projectId)
-        .catch(console.warn);
-      return this._processGeneratedSuggestions(
+      const processedSuggestions = this._processGeneratedSuggestions(
         promptString,
         generatedSuggestions,
         prefix,
       );
+      reactionReporter
+        .reportGeneration(
+          processedSuggestions[0],
+          Date.now() - startTime,
+          projectId,
+        )
+        .catch(console.warn);
+      return processedSuggestions;
     } catch (e) {
       console.warn(e);
     }
