@@ -21,8 +21,8 @@ export const takeGeneratedText = async (
 ) => {
   const endpoint = 'http://10.113.10.68:4322/code/statistical';
   const data = {
-    generatedOutput: true,
-    text_lenth: 1,
+    generated_output: true,
+    text_length: 1,
     username: USER_NAME,
     code_line: 1,
     project_id: projectId,
