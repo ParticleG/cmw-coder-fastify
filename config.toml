@@ -9,6 +9,7 @@ contextLimit = 1500
 stopTokens = [
     "<fim_pad>",
     "<|endoftext|>",
+    "\n}",
 ]
 suggestionCount = 1
 temperature = 0.2

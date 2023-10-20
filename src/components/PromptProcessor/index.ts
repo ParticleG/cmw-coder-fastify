@@ -31,6 +31,7 @@ export class PromptProcessor {
     try {
       const generatedSuggestions: string[] = [];
       const startTime = Date.now();
+      const isMultiLine = checkMultiLine(prefix);
       const {
         data: {
           details: { best_of_sequences },
@@ -42,7 +43,7 @@ export class PromptProcessor {
           best_of: suggestionCount,
           details: true,
           do_sample: true,
-          max_new_tokens: checkMultiLine(prefix)
+          max_new_tokens: isMultiLine
             ? maxNewTokens.snippet
             : maxNewTokens.line,
           stop: stopTokens,
@@ -53,11 +54,11 @@ export class PromptProcessor {
       if (best_of_sequences && best_of_sequences.length) {
         generatedSuggestions.push(
           ...best_of_sequences.map((bestOfSequence) =>
-            bestOfSequence.generated_text.trimStart(),
+            isMultiLine ? bestOfSequence.generated_text : bestOfSequence.generated_text.trimStart(),
           ),
         );
       } else {
-        generatedSuggestions.push(generated_text.trimStart());
+        generatedSuggestions.push(isMultiLine ? generated_text : generated_text.trimStart());
       }
       console.log({ generatedSuggestions });
       reactionReporter
