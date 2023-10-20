@@ -22,7 +22,7 @@ export const takeGeneratedText = async (
 ) => {
   const endpoint = 'http://10.113.10.68:4322/code/statistical';
   const isSnippet = completion[0] === '1';
-  const lines = isSnippet ? completion.split('\n').length : 1;
+  const lines = isSnippet ? completion.split('\\n').length : 1;
   const data = {
     generated_output: true,
     text_length: completion.length,
