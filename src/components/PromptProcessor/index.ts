@@ -126,9 +126,10 @@ export class PromptProcessor {
       .map((generatedSuggestion) =>
         generatedSuggestion.replace(/\r\n|\n/g, '\\r\\n'),
       )
-      .map(
-        (generatedSuggestion) =>
-          (isMultiLine ? '1' : '0') + generatedSuggestion,
+      .map((generatedSuggestion) =>
+        isMultiLine
+          ? '1' + generatedSuggestion
+          : '0' + generatedSuggestion.split('\\n')[0].trimEnd(),
       );
     // TODO: Replace Date Created if needed.
     console.log({ processed });
