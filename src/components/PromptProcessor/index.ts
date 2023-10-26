@@ -129,7 +129,7 @@ export class PromptProcessor {
       .map((generatedSuggestion) =>
         isMultiLine
           ? '1' + generatedSuggestion
-          : '0' + generatedSuggestion.split('\\n')[0].trimEnd(),
+          : '0' + generatedSuggestion.split('\\r\\n')[0].trimEnd(),
       );
     // TODO: Replace Date Created if needed.
     console.log({ processed });
