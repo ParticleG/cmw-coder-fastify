@@ -69,13 +69,15 @@ export class PromptProcessor {
         generatedSuggestions,
         prefix,
       );
-      reactionReporter
-        .reportGeneration(
-          processedSuggestions[0],
-          Date.now() - startTime,
-          projectId,
-        )
-        .catch(console.warn);
+      if (processedSuggestions.length) {
+        reactionReporter
+          .reportGeneration(
+            processedSuggestions[0],
+            Date.now() - startTime,
+            projectId,
+          )
+          .catch(console.warn);
+      }
       return processedSuggestions;
     } catch (e) {
       console.warn(e);

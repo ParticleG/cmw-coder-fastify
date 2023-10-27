@@ -87,6 +87,9 @@ export const generateSchema = {
       },
       projectId: {
         type: 'string'
+      },
+      version: {
+        type: 'string'
       }
     },
   },
@@ -96,5 +99,6 @@ export interface generateType {
   Body: {
     info: string;
     projectId: string;
+    version: string;
   };
 }

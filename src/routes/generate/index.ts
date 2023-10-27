@@ -12,7 +12,7 @@ import { SymbolInfo } from 'types/SymbolInfo';
 
 const parseEditorInfo = (rawText: string) => {
   const matchResult = rawText.match(
-    /^cursor="(.*?)";path="(.*?)";project="(.*?)";tabs="(.*?)";type="(.*?)";version="(.*?)";symbols="(.*?)";prefix="(.*?)";suffix="(.*?)"$/,
+    /^cursor="(.*?)";path="(.*?)";project="(.*?)";tabs="(.*?)";version="(.*?)";symbols="(.*?)";prefix="(.*?)";suffix="(.*?)"$/,
   );
   if (!matchResult) {
     throw new Error('Invalid editor info format');
@@ -23,8 +23,7 @@ const parseEditorInfo = (rawText: string) => {
     currentFilePath,
     projectFolder,
     tabsString,
-    completionTypeString,
-    version,
+    ,
     symbolString,
     prefix,
     suffix,
@@ -67,8 +66,6 @@ const parseEditorInfo = (rawText: string) => {
       parseInt(endLine),
       parseInt(endCharacter),
     ),
-    completionType: parseInt(completionTypeString) > 0 ? 'snippet' : 'line',
-    version,
     symbols,
     prefix: prefix.replace(/\\\\r\\\\n/g, '\r\n').replace(/\\=/g, '='),
     suffix: suffix.replace(/\\\\r\\\\n/g, '\r\n').replace(/\\=/g, '='),
@@ -81,7 +78,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     '/generate',
     { schema: generateSchema },
     async (request) => {
-      const {info, projectId} = request.body;
+      const {info, projectId, version} = request.body;
       const decodedInfo = decode(
         Buffer.from(info, 'base64'),
         'gb2312',
@@ -93,7 +90,6 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           cursorRange,
           openedTabs,
           symbols,
-          version,
           prefix,
           suffix,
         } = parseEditorInfo(decodedInfo);
