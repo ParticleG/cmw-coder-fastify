@@ -17,11 +17,13 @@ export class SystemTray {
 
   private readonly modelItems: MenuItemClickable[];
 
+  private handlers = new Map<string, () => Promise<void>>();
+
   constructor(modelType: ModelType = 'CMW') {
     this.modelType = modelType;
     this.modelItems = [
       this.constructRadioItem('Compare 模型', 'Compare 模型', 'CMW'),
-      this.constructRadioItem('CodeLlama 模型', 'CodeLlama 模型', 'CodeLlama'),
+      this.constructRadioItem('CodeLlama 模型', 'CodeLlama 模型', 'CODELLAMA'),
     ];
     this.systray = new SysTray({
       menu: {
@@ -46,19 +48,24 @@ export class SystemTray {
             title: '退出',
             tooltip: '退出 CMW Coder 后端',
             enabled: true,
-            click: async (systray: SysTray) => {
-              await systray.kill();
+            click: async () => {
+              await this.handlers.get('exit')?.();
+              await this.systray.kill();
             },
           } as MenuItemClickable,
         ],
       },
       // copyDir: String.raw`\\h3cbjnt23-fs/软件平台3/V7DEV/Comware Leopard 工具/SI插件/traybin`,
-      // copyDir: String.raw`\\VRHZ-G29624IR/Shared/sourceInsight/dist/traybin`,
+      copyDir: String.raw`\\VRHZ-G29624IR/Shared/sourceInsight/dist/traybin`,
     });
 
     this.systray
       .onClick((action: ClickableClickEvent) => action.item.click?.())
       .then();
+  }
+
+  setHandler(name: string, callback: () => Promise<void>) {
+    this.handlers.set(name, callback);
   }
 
   private constructRadioItem(
@@ -89,5 +96,3 @@ export class SystemTray {
     updateConfig({ currentModel: modelType });
   }
 }
-
-export const systemTray = new SystemTray();

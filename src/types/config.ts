@@ -8,7 +8,7 @@ import { parse } from 'toml';
 
 const ajv = new Ajv();
 
-export type ModelType = 'CMW' | 'CodeLlama';
+export type ModelType = 'CMW' | 'CODELLAMA';
 
 export interface ConfigType {
   currentModel: ModelType;
@@ -167,12 +167,10 @@ export const updateConfig = (newConfig: Partial<ConfigType>) => {
 
 export default fastifyPlugin(async (fastify) => {
   config = parse(readFileSync(resolve(join(cwd(), 'config.toml'))).toString());
-
-  if (validate(config)) {
-    fastify.config = config;
-  } else {
+  if (!validate(config)) {
     throw validate.errors;
   }
+  fastify.config = config;
 
   fastify.updateConfig = (newConfig: Partial<ConfigType>) => {
     fastify.config = updateConfig(newConfig);

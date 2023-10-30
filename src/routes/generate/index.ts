@@ -80,7 +80,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     async (request) => {
       const { info, projectId, version } = request.body;
       const decodedInfo = decode(Buffer.from(info, 'base64'), 'gb2312');
-      console.log(decodedInfo);
+      // console.log(decodedInfo);
       try {
         const {
           currentFilePath,
@@ -90,15 +90,6 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           prefix,
           suffix,
         } = parseEditorInfo(decodedInfo);
-        console.log({
-          currentFilePath,
-          cursorRange,
-          openedTabs,
-          symbols,
-          version,
-          prefix,
-          suffix,
-        });
         reactionReporter.updateCursor(cursorRange);
         reactionReporter.updateVersion(version);
         const promptExtractor = new PromptExtractor(
@@ -122,7 +113,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
             contents: results.map((result) =>
               encode(result, 'gb2312').toString('base64'),
             ),
-            model: fastify.config.currentModel
+            modelType: fastify.config.currentModel
           };
         } else {
           return { result: 'failure' };

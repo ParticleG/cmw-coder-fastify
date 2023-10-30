@@ -6,7 +6,7 @@ model = "CMW"
 
 [[endpoints]]
 endpoint = "http://10.113.36.111:9201"
-model = "CodeLlama"
+model = "CODELLAMA"
 
 [promptExtractor]
 contextLimit = 1_500
@@ -27,7 +27,7 @@ temperature = 0.2
   start = "<fim_prefix>"
 
   [[promptProcessor.separateTokens]]
-  model = "CodeLlama"
+  model = "CODELLAMA"
   end = "_<SUF>"
   middle = "_<MID>"
   start = "_<PRE>"

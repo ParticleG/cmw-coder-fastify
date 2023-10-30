@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 
 import { GenerateRequestData, GenerateResponseData } from 'utils/axios/types';
 import { USER_NAME } from 'utils/constants';
+import { ModelType } from 'types/config';
 import * as console from 'console';
 
 export const generate = async (
@@ -18,6 +19,7 @@ export const generate = async (
 export const takeGeneratedText = async (
   completion: string,
   delay: number,
+  modelType: ModelType,
   projectId: string,
   version: string,
 ) => {
@@ -36,7 +38,7 @@ export const takeGeneratedText = async (
     end: Math.floor(endTime / 1000),
     extra: version,
     product: 'SI',
-    secondClass: 'CMW',
+    secondClass: modelType,
     subType: projectId,
     type: 'AIGC',
     user: USER_NAME,
@@ -57,6 +59,7 @@ export const takeGeneratedText = async (
     },
   ];
 
-  console.log(data);
+  console.log({ statisticData: data });
+
   await axios.post(endpoint, data);
 };

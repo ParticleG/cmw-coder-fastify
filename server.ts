@@ -1,9 +1,9 @@
 import { ErrorObject } from 'ajv/lib/types';
 import Fastify from 'fastify';
 import App from 'app/src/app';
+import { SystemTray } from 'components/SystemTray';
 import Config from 'types/config';
 import { Logger, LogLevel } from 'types/Logger';
-import { systemTray } from 'components/SystemTray';
 
 const fastify = Fastify({
   logger: {
@@ -11,14 +11,19 @@ const fastify = Fastify({
   },
 });
 
-systemTray;
-
 async function main() {
   Logger.info('Config', `Loading server configs...`);
 
   await fastify.register(Config);
 
   fastify.register(App, fastify.config);
+
+  const systemTray = new SystemTray(fastify.config.currentModel);
+
+  systemTray.setHandler('close', async () => {
+    await fastify.close();
+  });
+
   fastify.listen(
     {
       host: fastify.config.server.host,
