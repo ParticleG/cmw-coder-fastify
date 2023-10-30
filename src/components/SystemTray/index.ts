@@ -1,5 +1,6 @@
 import SysTray, { ClickEvent, MenuItem } from 'systray2';
-import { ModelType, updateConfig } from 'types/config';
+import { ModelType } from 'types/config';
+import { ItemEventMap } from 'components/SystemTray/types';
 
 interface MenuItemClickable extends MenuItem {
   click?: () => Promise<void>;
@@ -17,7 +18,7 @@ export class SystemTray {
 
   private readonly modelItems: MenuItemClickable[];
 
-  private handlers = new Map<string, () => Promise<void>>();
+  private _handlerMap = new Map<keyof ItemEventMap, any>();
 
   constructor(modelType: ModelType = 'CMW') {
     this.modelType = modelType;
@@ -49,7 +50,7 @@ export class SystemTray {
             tooltip: '退出 CMW Coder 后端',
             enabled: true,
             click: async () => {
-              await this.handlers.get('exit')?.();
+              await this._handlerMap.get('exitItemClick')?.({ code: 0 });
               await this.systray.kill();
             },
           } as MenuItemClickable,
@@ -64,8 +65,11 @@ export class SystemTray {
       .then();
   }
 
-  setHandler(name: string, callback: () => Promise<void>) {
-    this.handlers.set(name, callback);
+  on<T extends keyof ItemEventMap>(
+    eventType: T,
+    listener: (event: ItemEventMap[T]) => Promise<void>,
+  ) {
+    this._handlerMap.set(eventType, listener);
   }
 
   private constructRadioItem(
@@ -93,6 +97,6 @@ export class SystemTray {
         });
       }),
     );
-    updateConfig({ currentModel: modelType });
+    await this._handlerMap.get('modelItemClick')?.({ modelType });
   }
 }

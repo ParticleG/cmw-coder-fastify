@@ -73,7 +73,6 @@ const parseEditorInfo = (rawText: string) => {
 };
 
 export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
-  const promptProcessor = new PromptProcessor(fastify.config);
   fastify.post<generateType>(
     '/generate',
     { schema: generateSchema },
@@ -102,6 +101,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           prefix,
           suffix,
         );
+        const promptProcessor = new PromptProcessor(fastify.config);
         const results = await promptProcessor.process(
           prompt,
           projectId,

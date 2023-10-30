@@ -20,8 +20,12 @@ async function main() {
 
   const systemTray = new SystemTray(fastify.config.currentModel);
 
-  systemTray.setHandler('close', async () => {
+  systemTray.on('exitItemClick', async () => {
     await fastify.close();
+  });
+
+  systemTray.on('modelItemClick', async ({ modelType }) => {
+    fastify.updateConfig({ currentModel: modelType });
   });
 
   fastify.listen(

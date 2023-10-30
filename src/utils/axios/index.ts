@@ -3,7 +3,6 @@ import axios, { AxiosResponse } from 'axios';
 import { GenerateRequestData, GenerateResponseData } from 'utils/axios/types';
 import { USER_NAME } from 'utils/constants';
 import { ModelType } from 'types/config';
-import * as console from 'console';
 
 export const generate = async (
   baseURL: string,
@@ -58,8 +57,6 @@ export const takeGeneratedText = async (
       firstClass: 'GENE_CHAR',
     },
   ];
-
-  console.log({ statisticData: data });
 
   await axios.post(endpoint, data);
 };

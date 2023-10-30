@@ -151,29 +151,22 @@ const validate = ajv.compile({
   },
 });
 
-let config: ConfigType;
-
-export const updateConfig = (newConfig: Partial<ConfigType>) => {
-  config = {
-    ...config,
-    ...newConfig,
-  };
-  writeFileSync(
-    resolve(join(cwd(), 'config.toml')),
-    stringify(config as unknown as JsonMap),
-  );
-  return config;
-};
-
 export default fastifyPlugin(async (fastify) => {
-  config = parse(readFileSync(resolve(join(cwd(), 'config.toml'))).toString());
+  const config = parse(readFileSync(resolve(join(cwd(), 'config.toml'))).toString());
   if (!validate(config)) {
     throw validate.errors;
   }
-  fastify.config = config;
+  fastify.config = config as ConfigType;
 
   fastify.updateConfig = (newConfig: Partial<ConfigType>) => {
-    fastify.config = updateConfig(newConfig);
+    fastify.config = {
+      ...fastify.config,
+      ...newConfig,
+    };
+    writeFileSync(
+      resolve(join(cwd(), 'config.toml')),
+      stringify(fastify.config as unknown as JsonMap),
+    );
   };
 });
 
