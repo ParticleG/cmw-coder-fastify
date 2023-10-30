@@ -1,6 +1,14 @@
 # This is the config for cmw-coder-fastify
 
+currentModel = "CMW"
+
+[[endpoints]]
 endpoint = "http://10.113.36.104"
+model = "CMW"
+
+[[endpoints]]
+endpoint = "http://10.113.36.111:9201"
+model = "CodeLlama"
 
 [promptExtractor]
 contextLimit = 1500
@@ -9,6 +17,7 @@ contextLimit = 1500
 stopTokens = [
     "<fim_pad>",
     "<|endoftext|>",
+    "</s>",
     "\n}",
 ]
 suggestionCount = 1
@@ -18,21 +27,18 @@ temperature = 0.2
 line = 60
 snippet = 512
 
-[promptProcessor.separateTokens]
+[[promptProcessor.separateTokens]]
+model = "CMW"
 end = "<fim_suffix>"
 middle = "<fim_middle>"
 start = "<fim_prefix>"
 
+[[promptProcessor.separateTokens]]
+model = "CodeLlama"
+end = "_<SUF>"
+middle = "_<MID>"
+start = "_<PRE>"
+
 [server]
 host = "localhost"
 port = 3000
-
-[suggestionProcessor]
-stopTokens = [
-    "<fim_pad>",
-    "<|endoftext|>",
-    "\n}",
-]
-
-[systemTray]
-model = "CMW"
