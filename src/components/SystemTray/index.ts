@@ -56,8 +56,7 @@ export class SystemTray {
           } as MenuItemClickable,
         ],
       },
-      // copyDir: String.raw`\\h3cbjnt23-fs/软件平台3/V7DEV/Comware Leopard 工具/SI插件/traybin`,
-      copyDir: String.raw`\\VRHZ-G29624IR/Shared/sourceInsight/dist/traybin`,
+      copyDir: String.raw`\\h3cbjnt23-fs/软件平台3/V7DEV/Comware Leopard 工具/SI插件/traybin`,
     });
 
     this.systray
