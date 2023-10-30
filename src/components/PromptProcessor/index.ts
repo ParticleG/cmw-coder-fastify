@@ -25,6 +25,10 @@ export class PromptProcessor {
     projectId: string,
     prefix: string,
   ): Promise<string[] | undefined> {
+    const endpoint =
+      this._config.endpoints.find(
+        (endpoint) => endpoint.model == this._config.currentModel,
+      )?.endpoint ?? this._config.endpoints[0].endpoint;
     const promptString = this._getPromptString(promptComponents);
     const { maxNewTokens, stopTokens, suggestionCount, temperature } =
       this._config.promptProcessor;
@@ -37,7 +41,7 @@ export class PromptProcessor {
           details: { best_of_sequences },
           generated_text,
         },
-      } = await generate(this._config.endpoint, {
+      } = await generate(endpoint, {
         inputs: promptString,
         parameters: {
           best_of: suggestionCount,
@@ -85,7 +89,11 @@ export class PromptProcessor {
   }
 
   private _getPromptString(promptComponents: PromptComponents): string {
-    const { start, end, middle } = this._config.promptProcessor.separateTokens;
+    const separateTokens =
+      this._config.promptProcessor.separateTokens.find(
+        (separateToken) => separateToken.model == this._config.currentModel,
+      ) ?? this._config.promptProcessor.separateTokens[0];
+    const { start, end, middle } = separateTokens;
     const result = [];
 
     if (promptComponents.reponame.length) {

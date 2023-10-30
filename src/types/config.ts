@@ -1,9 +1,9 @@
-import { JsonMap, stringify } from "@iarna/toml";
+import { JsonMap, stringify } from '@iarna/toml';
 import Ajv from 'ajv';
 import fastifyPlugin from 'fastify-plugin';
 import { readFileSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
-import {cwd} from 'process';
+import { cwd } from 'process';
 import { parse } from 'toml';
 
 const ajv = new Ajv();
@@ -166,13 +166,10 @@ export const updateConfig = (newConfig: Partial<ConfigType>) => {
 };
 
 export default fastifyPlugin(async (fastify) => {
-  config = parse(
-    readFileSync(resolve(join(cwd(), 'config.toml'))).toString(),
-  );
+  config = parse(readFileSync(resolve(join(cwd(), 'config.toml'))).toString());
 
   if (validate(config)) {
     fastify.config = config;
-    console.log(JSON.stringify(config));
   } else {
     throw validate.errors;
   }

@@ -1,7 +1,7 @@
 // @ts-ignore
-import escapeStringRegexp from "escape-string-regexp";
+import escapeStringRegexp from 'escape-string-regexp';
 
-import { ConfigType } from "types/config";
+import { ConfigType } from 'types/config';
 
 // Start with '//' or '#', or end with '{' or '*/'
 const detectRegex = /^(\/\/|#)|(\{|\*\/)$/;

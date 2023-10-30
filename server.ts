@@ -3,7 +3,7 @@ import Fastify from 'fastify';
 import App from 'app/src/app';
 import Config from 'types/config';
 import { Logger, LogLevel } from 'types/Logger';
-import { systemTray } from "components/SystemTray";
+import { systemTray } from 'components/SystemTray';
 
 const fastify = Fastify({
   logger: {
@@ -15,7 +15,6 @@ systemTray;
 
 async function main() {
   Logger.info('Config', `Loading server configs...`);
-
 
   await fastify.register(Config);
 

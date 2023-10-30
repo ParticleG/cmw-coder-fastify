@@ -61,10 +61,6 @@ export class SystemTray {
       .then();
   }
 
-  getModel() {
-    return this.modelType;
-  }
-
   private constructRadioItem(
     title: string,
     tooltip: string,

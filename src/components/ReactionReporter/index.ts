@@ -1,5 +1,5 @@
 import { Range } from 'types/vscode/range';
-import { takeGeneratedText as reportGeneration} from 'utils/axios';
+import { takeGeneratedText as reportGeneration } from 'utils/axios';
 
 class ReactionReporter {
   private _currentCursor: Range = new Range(0, 0, 0, 0);

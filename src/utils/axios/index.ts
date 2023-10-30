@@ -23,7 +23,8 @@ export const takeGeneratedText = async (
 ) => {
   const endTime = Date.now();
   const startTime = endTime - delay;
-  const endpoint = 'http://10.113.36.121/kong/RdTestResourceStatistic/report/summary';
+  const endpoint =
+    'http://10.113.36.121/kong/RdTestResourceStatistic/report/summary';
   const isSnippet = completion[0] === '1';
   const content = isSnippet
     ? completion.substring(1)
