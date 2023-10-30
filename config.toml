@@ -33,3 +33,6 @@ stopTokens = [
     "<|endoftext|>",
     "\n}",
 ]
+
+[systemTray]
+model = "CMW"

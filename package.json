@@ -23,7 +23,9 @@
     "fastify-cli": "^5.8.0",
     "fastify-plugin": "^4.5.1",
     "iconv-lite": "^0.6.3",
+    "json2toml": "^6.0.0",
     "prettier": "^3.0.3",
+    "systray2": "^2.1.4",
     "toml": "^3.0.0",
     "ts-date": "^3.1.0"
   },

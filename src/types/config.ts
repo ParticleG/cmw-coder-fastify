@@ -1,11 +1,14 @@
 import Ajv from 'ajv';
 import fastifyPlugin from 'fastify-plugin';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { parse } from 'toml';
 import * as process from 'process';
 
+const json2toml = require('json2toml');
 const ajv = new Ajv();
+
+export type ModelType = 'CMW' | 'CodeLlama';
 
 export interface ConfigType {
   endpoint: string;
@@ -32,6 +35,9 @@ export interface ConfigType {
   };
   suggestionProcessor: {
     stopTokens: string[];
+  };
+  systemTray: {
+    model: ModelType;
   };
 }
 
@@ -105,18 +111,6 @@ const validate = ajv.compile({
         },
       },
     },
-    suggestionProcessor: {
-      type: 'object',
-      properties: {
-        stopTokens: {
-          type: 'array',
-          items: {
-            type: 'string',
-          },
-          default: ['<fim_pad>', '<|endoftext|>'],
-        },
-      },
-    },
     server: {
       type: 'object',
       properties: {
@@ -132,24 +126,64 @@ const validate = ajv.compile({
         },
       },
     },
+    suggestionProcessor: {
+      type: 'object',
+      properties: {
+        stopTokens: {
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+          default: ['<fim_pad>', '<|endoftext|>'],
+        },
+      },
+    },
+    systemTray: {
+      type: 'object',
+      properties: {
+        model: {
+          type: 'string',
+          default: 'CMW',
+        },
+      },
+    },
   },
 });
 
+let config: ConfigType;
+
+export const updateConfig = (newConfig: Partial<ConfigType>) => {
+  config = {
+    ...config,
+    ...newConfig,
+  };
+  writeFileSync(
+    resolve(join(process.cwd(), 'config.toml')),
+    json2toml(config, { newlineAfterSection: true }),
+  );
+  return config;
+};
+
 export default fastifyPlugin(async (fastify) => {
-  const config = parse(
+  config = parse(
     readFileSync(resolve(join(process.cwd(), 'config.toml'))).toString(),
   );
 
   if (validate(config)) {
-    fastify.config = config as ConfigType;
+    fastify.config = config;
   } else {
     throw validate.errors;
   }
+
+  fastify.updateConfig = (newConfig: Partial<ConfigType>) => {
+    fastify.config = updateConfig(newConfig);
+  };
 });
 
 declare module 'fastify' {
   // noinspection JSUnusedGlobalSymbols
   interface FastifyInstance {
     config: ConfigType;
+    updateConfig: (newConfig: Partial<ConfigType>) => void;
   }
 }
