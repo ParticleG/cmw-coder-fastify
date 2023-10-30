@@ -28,10 +28,10 @@ temperature = 0.2
 
   [[promptProcessor.separateTokens]]
   model = "CODELLAMA"
-  end = "_<SUF>"
-  middle = "_<MID>"
-  start = "_<PRE>"
+  end = "▁<SUF>"
+  middle = "▁<MID>"
+  start = "▁<PRE>"
 
 [server]
 host = "localhost"
-port = 3_000
+port = 3000

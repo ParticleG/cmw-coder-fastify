@@ -23,8 +23,8 @@ export class SystemTray {
   constructor(modelType: ModelType = 'CMW') {
     this.modelType = modelType;
     this.modelItems = [
-      this.constructRadioItem('Compare 模型', 'Compare 模型', 'CMW'),
-      this.constructRadioItem('CodeLlama 模型', 'CodeLlama 模型', 'CODELLAMA'),
+      this.constructRadioItem('CmwCoder 1.0', 'CMW 模型', 'CMW'),
+      this.constructRadioItem('CmwCoder 2.0', 'CODELLAMA 模型', 'CODELLAMA'),
     ];
     this.systray = new SysTray({
       menu: {
