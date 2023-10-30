@@ -90,7 +90,7 @@ export class SystemTray {
         });
       }),
     );
-    updateConfig({ systemTray: { model: modelType } });
+    updateConfig({ currentModel: modelType });
   }
 }
 

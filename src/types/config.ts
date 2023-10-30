@@ -1,17 +1,21 @@
+import { JsonMap, stringify } from "@iarna/toml";
 import Ajv from 'ajv';
 import fastifyPlugin from 'fastify-plugin';
 import { readFileSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
+import {cwd} from 'process';
 import { parse } from 'toml';
-import * as process from 'process';
 
-const json2toml = require('json2toml');
 const ajv = new Ajv();
 
 export type ModelType = 'CMW' | 'CodeLlama';
 
 export interface ConfigType {
-  endpoint: string;
+  currentModel: ModelType;
+  endpoints: {
+    endpoint: string;
+    model: ModelType;
+  }[];
   promptExtractor: {
     contextLimit: number;
   };
@@ -23,8 +27,9 @@ export interface ConfigType {
     separateTokens: {
       end: string;
       middle: string;
+      model: ModelType;
       start: string;
-    };
+    }[];
     stopTokens: string[];
     suggestionCount: number;
     temperature: number;
@@ -33,20 +38,30 @@ export interface ConfigType {
     host: string;
     port: number;
   };
-  suggestionProcessor: {
-    stopTokens: string[];
-  };
-  systemTray: {
-    model: ModelType;
-  };
 }
 
 const validate = ajv.compile({
   type: 'object',
   properties: {
-    endpoint: {
+    currentModel: {
       type: 'string',
-      default: 'http://10.113.36.104',
+      default: 'CMW',
+    },
+    endpoints: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          endpoint: {
+            type: 'string',
+            default: 'http://10.113.36.104',
+          },
+          model: {
+            type: 'string',
+            default: 'CMW',
+          },
+        },
+      },
     },
     promptExtractor: {
       type: 'object',
@@ -74,19 +89,26 @@ const validate = ajv.compile({
           },
         },
         separateTokens: {
-          type: 'object',
-          properties: {
-            end: {
-              type: 'string',
-              default: '<fim_suffix>',
-            },
-            middle: {
-              type: 'string',
-              default: '<fim_middle>',
-            },
-            start: {
-              type: 'string',
-              default: '<fim_prefix>',
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              end: {
+                type: 'string',
+                default: '<fim_suffix>',
+              },
+              middle: {
+                type: 'string',
+                default: '<fim_middle>',
+              },
+              model: {
+                type: 'string',
+                default: 'CMW',
+              },
+              start: {
+                type: 'string',
+                default: '<fim_prefix>',
+              },
             },
           },
         },
@@ -95,7 +117,7 @@ const validate = ajv.compile({
           items: {
             type: 'string',
           },
-          default: ['<fim_pad>', '<|endoftext|>'],
+          default: ['<fim_pad>', '<|endoftext|>', '</s>', '\n}'],
         },
         suggestionCount: {
           type: 'number',
@@ -126,27 +148,6 @@ const validate = ajv.compile({
         },
       },
     },
-    suggestionProcessor: {
-      type: 'object',
-      properties: {
-        stopTokens: {
-          type: 'array',
-          items: {
-            type: 'string',
-          },
-          default: ['<fim_pad>', '<|endoftext|>'],
-        },
-      },
-    },
-    systemTray: {
-      type: 'object',
-      properties: {
-        model: {
-          type: 'string',
-          default: 'CMW',
-        },
-      },
-    },
   },
 });
 
@@ -158,19 +159,20 @@ export const updateConfig = (newConfig: Partial<ConfigType>) => {
     ...newConfig,
   };
   writeFileSync(
-    resolve(join(process.cwd(), 'config.toml')),
-    json2toml(config, { newlineAfterSection: true }),
+    resolve(join(cwd(), 'config.toml')),
+    stringify(config as unknown as JsonMap),
   );
   return config;
 };
 
 export default fastifyPlugin(async (fastify) => {
   config = parse(
-    readFileSync(resolve(join(process.cwd(), 'config.toml'))).toString(),
+    readFileSync(resolve(join(cwd(), 'config.toml'))).toString(),
   );
 
   if (validate(config)) {
     fastify.config = config;
+    console.log(JSON.stringify(config));
   } else {
     throw validate.errors;
   }
