@@ -25,6 +25,10 @@ export class PromptProcessor {
     projectId: string,
     prefix: string,
   ): Promise<string[] | undefined> {
+    const endpoint =
+      this._config.endpoints.find(
+        (endpoint) => endpoint.model == this._config.currentModel,
+      )?.endpoint ?? this._config.endpoints[0].endpoint;
     const promptString = this._getPromptString(promptComponents);
     const { maxNewTokens, stopTokens, suggestionCount, temperature } =
       this._config.promptProcessor;
@@ -32,12 +36,26 @@ export class PromptProcessor {
       const generatedSuggestions: string[] = [];
       const startTime = Date.now();
       const isMultiLine = checkMultiLine(prefix);
-      const {
+      /*const {
         data: {
           details: { best_of_sequences },
           generated_text,
         },
-      } = await generate(this._config.endpoint, {
+      } = await generate(endpoint, {
+        inputs: promptString,
+        parameters: {
+          best_of: suggestionCount,
+          details: true,
+          do_sample: true,
+          max_new_tokens: isMultiLine
+            ? maxNewTokens.snippet
+            : maxNewTokens.line,
+          stop: stopTokens,
+          temperature: temperature,
+          top_p: 0.95,
+        },
+      });*/
+      const response = await generate(endpoint, {
         inputs: promptString,
         parameters: {
           best_of: suggestionCount,
@@ -51,6 +69,13 @@ export class PromptProcessor {
           top_p: 0.95,
         },
       });
+      // console.log(response);
+      const {
+        data: {
+          details: { best_of_sequences },
+          generated_text,
+        },
+      } = response;
       if (best_of_sequences && best_of_sequences.length) {
         generatedSuggestions.push(
           ...best_of_sequences.map((bestOfSequence) =>
@@ -69,11 +94,13 @@ export class PromptProcessor {
         generatedSuggestions,
         prefix,
       );
+      console.log({ processedSuggestions });
       if (processedSuggestions.length) {
         reactionReporter
           .reportGeneration(
             processedSuggestions[0],
             Date.now() - startTime,
+            this._config.currentModel,
             projectId,
           )
           .catch(console.warn);
@@ -85,7 +112,11 @@ export class PromptProcessor {
   }
 
   private _getPromptString(promptComponents: PromptComponents): string {
-    const { start, end, middle } = this._config.promptProcessor.separateTokens;
+    const separateTokens =
+      this._config.promptProcessor.separateTokens.find(
+        (separateToken) => separateToken.model == this._config.currentModel,
+      ) ?? this._config.promptProcessor.separateTokens[0];
+    const { start, end, middle } = separateTokens;
     const result = [];
 
     if (promptComponents.reponame.length) {
@@ -115,7 +146,8 @@ export class PromptProcessor {
     prefix: string,
   ): string[] {
     const isMultiLine = checkMultiLine(prefix);
-    const processed = generatedSuggestions
+    // TODO: Replace Date Created if needed.
+    return generatedSuggestions
       .map((generatedSuggestion) =>
         generatedSuggestion.substring(0, promptString.length) === promptString
           ? generatedSuggestion.substring(promptString.length)
@@ -133,10 +165,6 @@ export class PromptProcessor {
           ? '1' + generatedSuggestion
           : '0' + generatedSuggestion.split('\\r\\n')[0].trimEnd(),
       );
-    // TODO: Replace Date Created if needed.
-    console.log({ processed });
-
-    return processed;
 
     /*return [
           ...processed,

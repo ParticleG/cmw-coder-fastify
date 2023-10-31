@@ -1,14 +1,21 @@
+import { JsonMap, stringify } from '@iarna/toml';
 import Ajv from 'ajv';
 import fastifyPlugin from 'fastify-plugin';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
+import { cwd } from 'process';
 import { parse } from 'toml';
-import * as process from 'process';
 
 const ajv = new Ajv();
 
+export type ModelType = 'CMW' | 'CODELLAMA';
+
 export interface ConfigType {
-  endpoint: string;
+  currentModel: ModelType;
+  endpoints: {
+    endpoint: string;
+    model: ModelType;
+  }[];
   promptExtractor: {
     contextLimit: number;
   };
@@ -20,8 +27,9 @@ export interface ConfigType {
     separateTokens: {
       end: string;
       middle: string;
+      model: ModelType;
       start: string;
-    };
+    }[];
     stopTokens: string[];
     suggestionCount: number;
     temperature: number;
@@ -30,17 +38,30 @@ export interface ConfigType {
     host: string;
     port: number;
   };
-  suggestionProcessor: {
-    stopTokens: string[];
-  };
 }
 
 const validate = ajv.compile({
   type: 'object',
   properties: {
-    endpoint: {
+    currentModel: {
       type: 'string',
-      default: 'http://10.113.36.104',
+      default: 'CMW',
+    },
+    endpoints: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          endpoint: {
+            type: 'string',
+            default: 'http://10.113.36.104',
+          },
+          model: {
+            type: 'string',
+            default: 'CMW',
+          },
+        },
+      },
     },
     promptExtractor: {
       type: 'object',
@@ -68,19 +89,26 @@ const validate = ajv.compile({
           },
         },
         separateTokens: {
-          type: 'object',
-          properties: {
-            end: {
-              type: 'string',
-              default: '<fim_suffix>',
-            },
-            middle: {
-              type: 'string',
-              default: '<fim_middle>',
-            },
-            start: {
-              type: 'string',
-              default: '<fim_prefix>',
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              end: {
+                type: 'string',
+                default: '<fim_suffix>',
+              },
+              middle: {
+                type: 'string',
+                default: '<fim_middle>',
+              },
+              model: {
+                type: 'string',
+                default: 'CMW',
+              },
+              start: {
+                type: 'string',
+                default: '<fim_prefix>',
+              },
             },
           },
         },
@@ -89,7 +117,7 @@ const validate = ajv.compile({
           items: {
             type: 'string',
           },
-          default: ['<fim_pad>', '<|endoftext|>'],
+          default: ['<fim_pad>', '<|endoftext|>', '</s>', '\n}'],
         },
         suggestionCount: {
           type: 'number',
@@ -102,18 +130,6 @@ const validate = ajv.compile({
           default: 0.2,
           minimum: 0,
           maximum: 1,
-        },
-      },
-    },
-    suggestionProcessor: {
-      type: 'object',
-      properties: {
-        stopTokens: {
-          type: 'array',
-          items: {
-            type: 'string',
-          },
-          default: ['<fim_pad>', '<|endoftext|>'],
         },
       },
     },
@@ -136,20 +152,28 @@ const validate = ajv.compile({
 });
 
 export default fastifyPlugin(async (fastify) => {
-  const config = parse(
-    readFileSync(resolve(join(process.cwd(), 'config.toml'))).toString(),
-  );
-
-  if (validate(config)) {
-    fastify.config = config as ConfigType;
-  } else {
+  const config = parse(readFileSync(resolve(join(cwd(), 'config.toml'))).toString());
+  if (!validate(config)) {
     throw validate.errors;
   }
+  fastify.config = config as ConfigType;
+
+  fastify.updateConfig = (newConfig: Partial<ConfigType>) => {
+    fastify.config = {
+      ...fastify.config,
+      ...newConfig,
+    };
+    writeFileSync(
+      resolve(join(cwd(), 'config.toml')),
+      stringify(fastify.config as unknown as JsonMap),
+    );
+  };
 });
 
 declare module 'fastify' {
   // noinspection JSUnusedGlobalSymbols
   interface FastifyInstance {
     config: ConfigType;
+    updateConfig: (newConfig: Partial<ConfigType>) => void;
   }
 }

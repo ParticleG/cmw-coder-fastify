@@ -1,5 +1,6 @@
 import { Range } from 'types/vscode/range';
-import { takeGeneratedText as reportGeneration} from 'utils/axios';
+import { takeGeneratedText as reportGeneration } from 'utils/axios';
+import { ModelType } from 'types/config';
 
 class ReactionReporter {
   private _currentCursor: Range = new Range(0, 0, 0, 0);
@@ -15,9 +16,20 @@ class ReactionReporter {
     this._version = version;
   }
 
-  async reportGeneration(completion: string, delay: number, projectId: string) {
+  async reportGeneration(
+    completion: string,
+    delay: number,
+    modelType: ModelType,
+    projectId: string,
+  ) {
     if (this._lastCursor.start.line !== this._currentCursor.start.line) {
-      await reportGeneration(completion, delay, projectId, this._version);
+      await reportGeneration(
+        completion,
+        delay,
+        modelType,
+        projectId,
+        this._version,
+      );
     }
   }
 }

@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@fastify/sensible": "^5.3.0",
+    "@iarna/toml": "^2.2.5",
     "ajv": "^8.12.0",
     "axios": "^1.5.1",
     "chalk": "^5.3.0",
@@ -24,6 +25,7 @@
     "fastify-plugin": "^4.5.1",
     "iconv-lite": "^0.6.3",
     "prettier": "^3.0.3",
+    "systray2": "^2.1.4",
     "toml": "^3.0.0",
     "ts-date": "^3.1.0"
   },

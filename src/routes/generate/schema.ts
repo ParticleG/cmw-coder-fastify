@@ -86,11 +86,11 @@ export const generateSchema = {
         type: 'string',
       },
       projectId: {
-        type: 'string'
+        type: 'string',
       },
       version: {
-        type: 'string'
-      }
+        type: 'string',
+      },
     },
   },
 };

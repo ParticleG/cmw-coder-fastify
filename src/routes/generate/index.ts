@@ -73,17 +73,13 @@ const parseEditorInfo = (rawText: string) => {
 };
 
 export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
-  const promptProcessor = new PromptProcessor(fastify.config);
   fastify.post<generateType>(
     '/generate',
     { schema: generateSchema },
     async (request) => {
-      const {info, projectId, version} = request.body;
-      const decodedInfo = decode(
-        Buffer.from(info, 'base64'),
-        'gb2312',
-      );
-      console.log(decodedInfo);
+      const { info, projectId, version } = request.body;
+      const decodedInfo = decode(Buffer.from(info, 'base64'), 'gb2312');
+      // console.log(decodedInfo);
       try {
         const {
           currentFilePath,
@@ -93,15 +89,6 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           prefix,
           suffix,
         } = parseEditorInfo(decodedInfo);
-        console.log({
-          currentFilePath,
-          cursorRange,
-          openedTabs,
-          symbols,
-          version,
-          prefix,
-          suffix,
-        });
         reactionReporter.updateCursor(cursorRange);
         reactionReporter.updateVersion(version);
         const promptExtractor = new PromptExtractor(
@@ -114,13 +101,19 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           prefix,
           suffix,
         );
-        const results = await promptProcessor.process(prompt, projectId, prefix);
+        const promptProcessor = new PromptProcessor(fastify.config);
+        const results = await promptProcessor.process(
+          prompt,
+          projectId,
+          prefix,
+        );
         if (results) {
           return {
             result: 'success',
             contents: results.map((result) =>
               encode(result, 'gb2312').toString('base64'),
             ),
+            modelType: fastify.config.currentModel
           };
         } else {
           return { result: 'failure' };

@@ -1,7 +1,7 @@
 import { ErrorObject } from 'ajv/lib/types';
 import Fastify from 'fastify';
-
 import App from 'app/src/app';
+import { SystemTray } from 'components/SystemTray';
 import Config from 'types/config';
 import { Logger, LogLevel } from 'types/Logger';
 
@@ -17,6 +17,17 @@ async function main() {
   await fastify.register(Config);
 
   fastify.register(App, fastify.config);
+
+  const systemTray = new SystemTray(fastify.config.currentModel);
+
+  systemTray.on('exitItemClick', async () => {
+    await fastify.close();
+  });
+
+  systemTray.on('modelItemClick', async ({ modelType }) => {
+    fastify.updateConfig({ currentModel: modelType });
+  });
+
   fastify.listen(
     {
       host: fastify.config.server.host,
