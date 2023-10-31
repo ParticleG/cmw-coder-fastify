@@ -1,3 +1,14 @@
+export interface JudgmentData {
+  code: number;
+  data: number;
+  exception?: [];
+  msg?: string;
+  refreshedToken?: string;
+  techMsg?: string;
+  token?: string;
+  traceId?: string;
+}
+
 export interface GenerateRequestData {
   inputs: string;
   parameters: {

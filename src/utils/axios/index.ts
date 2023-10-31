@@ -4,6 +4,50 @@ import { GenerateRequestData, GenerateResponseData } from 'utils/axios/types';
 import { USER_NAME } from 'utils/constants';
 import { ModelType } from 'types/config';
 
+const rdTestService = axios.create({
+  baseURL: 'http://rdtest.h3c.com/kong/RdTestServiceProxy-e/EpWeChatLogin',
+});
+
+const rdTestAiService = axios.create({
+  baseURL: 'http://rdtest.h3c.com/kong/RdTestAiService',
+});
+
+export const authCode = async (userId: string) => {
+  return await rdTestService.get('/authCode', {
+    params: {
+      operation: 'AI',
+      userId,
+    },
+  });
+};
+
+export const login = async (userId: string, code: string) => {
+  return await rdTestService.get('/login', {
+    params: {
+      code,
+      userId,
+    },
+  });
+};
+
+export const refreshToken = async (refreshToken: string) => {
+  return await rdTestService.post('/refreshToken', {
+    params: {
+      refreshToken,
+    },
+  });
+};
+
+export const judgment = async (
+  token: string,
+): Promise<AxiosResponse<GenerateResponseData>> => {
+  return await rdTestAiService.get('/auth/judgment', {
+    headers: {
+      'x-authorization': `bearer ${token}`,
+    },
+  });
+};
+
 export const generate = async (
   baseURL: string,
   data: GenerateRequestData,
