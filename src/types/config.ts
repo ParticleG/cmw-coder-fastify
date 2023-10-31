@@ -11,6 +11,7 @@ const ajv = new Ajv();
 export type ModelType = 'CMW' | 'CODELLAMA';
 
 export interface ConfigType {
+  auth: boolean;
   currentModel: ModelType;
   endpoints: {
     endpoint: string;
@@ -43,6 +44,10 @@ export interface ConfigType {
 const validate = ajv.compile({
   type: 'object',
   properties: {
+    auth: {
+      type: 'boolean',
+      default: false,
+    },
     currentModel: {
       type: 'string',
       default: 'CMW',
@@ -152,7 +157,9 @@ const validate = ajv.compile({
 });
 
 export default fastifyPlugin(async (fastify) => {
-  const config = parse(readFileSync(resolve(join(cwd(), 'config.toml'))).toString());
+  const config = parse(
+    readFileSync(resolve(join(cwd(), 'config.toml'))).toString(),
+  );
   if (!validate(config)) {
     throw validate.errors;
   }

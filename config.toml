@@ -1,3 +1,5 @@
+auth = false
+
 currentModel = "CMW"
 
 [[endpoints]]
