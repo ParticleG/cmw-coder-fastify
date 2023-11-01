@@ -9,6 +9,7 @@
     "format": "prettier --write server.ts src/",
     "publish": "node build.mjs && nexe build/server.js -t windows-x64-14.15.3 -o dist/cmw-coder-fastify"
   },
+  "type": "module",
   "keywords": [],
   "author": "ParticleG",
   "license": "ISC",
@@ -24,6 +25,7 @@
     "fastify-cli": "^5.8.0",
     "fastify-plugin": "^4.5.1",
     "iconv-lite": "^0.6.3",
+    "lowdb": "^6.1.1",
     "prettier": "^3.0.3",
     "systray2": "^2.1.4",
     "toml": "^3.0.0",

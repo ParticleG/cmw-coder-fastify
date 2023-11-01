@@ -7,9 +7,6 @@ import { cwd } from 'process';
 import { parse } from 'toml';
 
 const ajv = new Ajv();
-
-export type ModelType = 'CMW' | 'CODELLAMA';
-
 export interface ConfigType {
   auth: boolean;
   currentModel: ModelType;

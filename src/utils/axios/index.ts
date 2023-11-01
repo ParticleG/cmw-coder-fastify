@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from 'axios';
 
+import { ModelType } from 'types/common';
 import { GenerateRequestData, GenerateResponseData } from 'utils/axios/types';
 import { USER_NAME } from 'utils/constants';
-import { ModelType } from 'types/config';
 
 const rdTestService = axios.create({
   baseURL: 'http://rdtest.h3c.com/kong/RdTestServiceProxy-e/EpWeChatLogin',

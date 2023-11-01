@@ -38,6 +38,9 @@ dependencies:
   iconv-lite:
     specifier: ^0.6.3
     version: 0.6.3
+  lowdb:
+    specifier: ^6.1.1
+    version: 6.1.1
   prettier:
     specifier: ^3.0.3
     version: 3.0.3
@@ -1889,6 +1892,13 @@ packages:
       chalk: 2.4.2
     dev: true
 
+  /lowdb@6.1.1:
+    resolution: {integrity: sha512-HO13FCxI8SCwfj2JRXOKgXggxnmfSc+l0aJsZ5I34X3pwzG/DPBSKyKu3Zkgg/pNmx854SVgE2la0oUeh6wzNw==}
+    engines: {node: '>=16'}
+    dependencies:
+      steno: 3.1.1
+    dev: false
+
   /lowercase-keys@1.0.0:
     resolution: {integrity: sha512-RPlX0+PHuvxVDZ7xX+EBVAp4RsVxP/TdDSN2mJYdiq1Lc4Hz7EUSjUI7RZrKKlmrIzVhf6Jo2stj7++gVarS0A==}
     engines: {node: '>=0.10.0'}
@@ -2566,6 +2576,11 @@ packages:
   /statuses@2.0.1:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
     engines: {node: '>= 0.8'}
+    dev: false
+
+  /steno@3.1.1:
+    resolution: {integrity: sha512-B7c6EVH7oEiaMRW36SjUnktkDwp/qd4pQiduylyiqvcZEZDeX0IIFZRBZdwO/RaVo60M0wkDwC0e8yeKaR4VGg==}
+    engines: {node: '>=16'}
     dev: false
 
   /strict-uri-encode@1.1.0:
