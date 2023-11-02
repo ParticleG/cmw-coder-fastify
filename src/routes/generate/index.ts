@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from 'fastify';
 import { decode, encode } from 'iconv-lite';
 
+import { databaseManager } from "components/DatabaseManager";
 import reactionReporter from 'components/ReactionReporter';
 import { PromptExtractor } from 'components/PromptExtractor';
 import { PromptProcessor } from 'components/PromptProcessor';
@@ -113,7 +114,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
             contents: results.map((result) =>
               encode(result, 'gb2312').toString('base64'),
             ),
-            modelType: fastify.config.currentModel,
+            modelType: databaseManager.getModelType() ?? fastify.config.availableModels[0],
           };
         } else {
           return { result: 'failure' };

@@ -11,7 +11,7 @@ import { authCode, judgment, login, refreshToken } from 'utils/axios/index.js';
 // import { USER_NAME } from 'utils/constants';
 
 interface Database {
-  modelType: ModelType;
+  modelType?: ModelType;
   tokens: {
     access: string;
     refresh: string;
@@ -19,7 +19,6 @@ interface Database {
 }
 
 const defaultData = (): Database => ({
-  modelType: 'CMW',
   tokens: {
     access: '',
     refresh: '',
@@ -71,11 +70,11 @@ class DatabaseManager {
     return false;
   }
 
-  get modelType() {
+  getModelType() {
     return this._db.data.modelType;
   }
 
-  set modelType(modelType: ModelType) {
+  setModelType(modelType: ModelType) {
     this._db.data.modelType = modelType;
     this._db.write();
   }

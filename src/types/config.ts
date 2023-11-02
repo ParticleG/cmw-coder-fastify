@@ -1,7 +1,6 @@
-import { JsonMap, stringify } from '@iarna/toml';
 import Ajv from 'ajv';
 import fastifyPlugin from 'fastify-plugin';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { cwd } from 'process';
 import { parse } from 'toml';
@@ -11,6 +10,7 @@ import { ModelType } from "types/common";
 const ajv = new Ajv();
 export interface ConfigType {
   authRequired: boolean;
+  availableModels: ModelType[];
   endpoints: {
     endpoint: string;
     model: ModelType;
@@ -152,29 +152,17 @@ const validate = ajv.compile({
 
 export default fastifyPlugin(async (fastify) => {
   const config = parse(
-    readFileSync(resolve(join(cwd(), 'config.toml'))).toString(),
+    readFileSync(resolve(join(cwd(), 'config-green.toml'))).toString(),
   );
   if (!validate(config)) {
     throw validate.errors;
   }
   fastify.config = config as ConfigType;
-
-  fastify.updateConfig = (newConfig: Partial<ConfigType>) => {
-    fastify.config = {
-      ...fastify.config,
-      ...newConfig,
-    };
-    writeFileSync(
-      resolve(join(cwd(), 'config.toml')),
-      stringify(fastify.config as unknown as JsonMap),
-    );
-  };
 });
 
 declare module 'fastify' {
   // noinspection JSUnusedGlobalSymbols
   interface FastifyInstance {
     config: ConfigType;
-    updateConfig: (newConfig: Partial<ConfigType>) => void;
   }
 }

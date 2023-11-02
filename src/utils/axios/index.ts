@@ -2,6 +2,8 @@ import axios from 'axios';
 
 import { ModelType } from 'types/common';
 import {
+  GenerateRdRequestData,
+  GenerateRdResponseData,
   GenerateRequestData,
   GenerateResponseData,
   JudgmentData,
@@ -41,11 +43,15 @@ export const login = async (userId: string, code: string) => {
 };
 
 export const refreshToken = async (refreshToken: string) => {
-  return await rdTestLoginService.post<RefreshData>('/token/refresh', {
-    params: {
-      refreshToken,
+  return await rdTestLoginService.post<RefreshData>(
+    '/token/refresh',
+    undefined,
+    {
+      params: {
+        refreshToken,
+      },
     },
-  });
+  );
 };
 
 export const judgment = async (token: string) => {
@@ -64,6 +70,22 @@ export const generate = async (baseURL: string, data: GenerateRequestData) => {
     .post<GenerateResponseData>('/generate', data);
 };
 
+export const generateRd = async (
+  baseURL: string,
+  data: GenerateRdRequestData,
+  accessToken: string,
+) => {
+  return await axios
+    .create({
+      baseURL,
+    })
+    .post<GenerateRdResponseData[]>('/generateCode', data, {
+      headers: {
+        'x-authorization': `bearer ${accessToken}`,
+      },
+    });
+};
+
 export const takeGeneratedText = async (
   completion: string,
   delay: number,
@@ -73,8 +95,10 @@ export const takeGeneratedText = async (
 ) => {
   const endTime = Date.now();
   const startTime = endTime - delay;
+  // const endpoint =
+  //   'http://10.113.36.121/kong/RdTestResourceStatistic/report/summary';
   const endpoint =
-    'http://10.113.36.121/kong/RdTestResourceStatistic/report/summary';
+    'http://10.153.227.40:10808/report/summary';
   const isSnippet = completion[0] === '1';
   const content = isSnippet
     ? completion.substring(1)

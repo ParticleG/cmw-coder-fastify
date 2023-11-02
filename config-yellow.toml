@@ -1,0 +1,32 @@
+authRequired = true
+
+availableModels = [ "LINSEER" ]
+
+[[endpoints]]
+endpoint = "http://rdtest.h3c.com/kong/RdTestAiService/chatgpt"
+model = "LINSEER"
+
+[promptExtractor]
+contextLimit = 1_500
+
+[promptProcessor]
+stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
+suggestionCount = 1
+temperature = 0.2
+
+  [promptProcessor.maxNewTokens]
+  line = 16
+  snippet = 128
+
+  [[promptProcessor.separateTokens]]
+  model = "LINSEER"
+  end = ""
+  middle = ""
+  start = ""
+
+[server]
+host = "localhost"
+port = 3000
+
+[statistics]
+endpoint = "http://10.114.142.235:10808"

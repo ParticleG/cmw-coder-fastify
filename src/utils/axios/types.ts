@@ -35,6 +35,18 @@ export interface GenerateRequestData {
   };
 }
 
+export interface GenerateRdRequestData {
+  question: string;
+  model: 'linseer-code-13b' | 'linseer-code-34b';
+  maxTokens: number;
+  temperature: number;
+  stop: string[];
+  suffix: string;
+  plugin: 'SI';
+  profileModel: '百业灵犀-13B';
+  templateName: 'LineCode' | 'ShortLineCode';
+}
+
 interface GenerateDetailPrefill {
   id: number;
   logprob: number;
@@ -61,4 +73,12 @@ interface GenerateDetail extends GenerateDetailInternal {
 export interface GenerateResponseData {
   details: GenerateDetail;
   generated_text: string;
+}
+
+export interface GenerateRdResponseData {
+  text: string;
+  code: string;
+  sessionId: number;
+  finishReason: 'length' | 'stop';
+  model: 'linseer-code-13b' | 'linseer-code-34b';
 }

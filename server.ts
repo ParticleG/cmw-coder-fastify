@@ -1,15 +1,13 @@
-import { runVbs } from '@el3um4s/run-vbs';
 import { ErrorObject } from 'ajv/lib/types';
 import Fastify from 'fastify';
-import { decode } from 'iconv-lite';
 
 import App from 'app/src/app';
 import { databaseManager } from 'components/DatabaseManager';
 import { SystemTray } from 'components/SystemTray';
 import Config from 'types/config';
 import { Logger, LogLevel } from 'types/Logger';
-import { readFileSync } from 'fs';
 import * as console from 'console';
+import { loginPrompt } from 'utils/script';
 
 const fastify = Fastify({
   logger: {
@@ -24,14 +22,18 @@ async function main() {
 
   fastify.register(App, fastify.config);
 
-  const systemTray = new SystemTray(databaseManager.modelType);
+  if (!databaseManager.getModelType()) {
+    databaseManager.setModelType(fastify.config.availableModels[0]);
+  }
+
+  const systemTray = new SystemTray();
 
   systemTray.on('exitItemClick', async () => {
     await fastify.close();
   });
 
   systemTray.on('modelItemClick', async ({ modelType }) => {
-    databaseManager.modelType = modelType;
+    databaseManager.setModelType(fastify.config.availableModels[0]);
   });
 
   fastify.listen(
@@ -56,17 +58,10 @@ async function main() {
       ),
   );
 
-  if (fastify.config.authRequired && !(await databaseManager.refreshToken())) {
-    const script = decode(
-      readFileSync('./src/assets/login.vbs'),
-      'gb2312',
-    ).toString();
-    let isSuccess = false;
-    do {
-      await databaseManager.authCode();
-      const { success } = JSON.parse(await runVbs({ vbs: script }));
-      isSuccess = success;
-    } while (!isSuccess);
+  if (fastify.config.authRequired) {
+    if (!(await databaseManager.accessToken())) {
+      await loginPrompt();
+    }
   }
 }
 

@@ -1,5 +1,7 @@
 authRequired = false
 
+availableModels = [ "CMW", "CODELLAMA" ]
+
 [[endpoints]]
 endpoint = "http://10.113.36.104"
 model = "CMW"
@@ -17,8 +19,8 @@ suggestionCount = 1
 temperature = 0.2
 
   [promptProcessor.maxNewTokens]
-  line = 60
-  snippet = 512
+  line = 16
+  snippet = 128
 
   [[promptProcessor.separateTokens]]
   model = "CMW"
