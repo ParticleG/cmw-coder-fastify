@@ -113,7 +113,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
             contents: results.map((result) =>
               encode(result, 'gb2312').toString('base64'),
             ),
-            modelType: fastify.config.currentModel
+            modelType: fastify.config.currentModel,
           };
         } else {
           return { result: 'failure' };

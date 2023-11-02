@@ -1,6 +1,6 @@
+import { ModelType } from 'types/common';
 import { Range } from 'types/vscode/range';
 import { takeGeneratedText as reportGeneration } from 'utils/axios';
-import { ModelType } from 'types/config';
 
 class ReactionReporter {
   private _currentCursor: Range = new Range(0, 0, 0, 0);

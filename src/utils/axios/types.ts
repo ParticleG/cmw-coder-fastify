@@ -1,12 +1,25 @@
 export interface JudgmentData {
   code: number;
   data: number;
-  exception?: [];
-  msg?: string;
-  refreshedToken?: string;
-  techMsg?: string;
-  token?: string;
-  traceId?: string;
+  error?: string;
+  exception: [] | null;
+  msg: string | null;
+  refreshedToken: string | null;
+  token: string | null;
+}
+
+export interface LoginData {
+  userId: string;
+  token: string;
+  refreshToken: string;
+  error: string | null;
+}
+
+export interface RefreshData {
+  access_token: string;
+  expires_in: number;
+  refresh_token: string;
+  token_type: 'bearer';
 }
 
 export interface GenerateRequestData {

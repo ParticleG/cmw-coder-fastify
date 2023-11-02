@@ -1,5 +1,6 @@
 import SysTray, { ClickEvent, MenuItem } from 'systray2';
-import { ModelType } from 'types/config';
+
+import { ModelType } from 'types/common';
 import { ItemEventMap } from 'components/SystemTray/types';
 
 interface MenuItemClickable extends MenuItem {

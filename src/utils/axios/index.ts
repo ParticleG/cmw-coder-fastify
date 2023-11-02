@@ -1,11 +1,21 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 
 import { ModelType } from 'types/common';
-import { GenerateRequestData, GenerateResponseData } from 'utils/axios/types';
+import {
+  GenerateRequestData,
+  GenerateResponseData,
+  JudgmentData,
+  LoginData,
+  RefreshData,
+} from 'utils/axios/types';
 import { USER_NAME } from 'utils/constants';
 
-const rdTestService = axios.create({
-  baseURL: 'http://rdtest.h3c.com/kong/RdTestServiceProxy-e/EpWeChatLogin',
+const rdTestServiceProxy = axios.create({
+  baseURL: 'http://rdtest.h3c.com/kong/RdTestServiceProxy-e',
+});
+
+const rdTestLoginService = axios.create({
+  baseURL: 'http://rdtest.h3c.com/kong/RdTestLoginService/api',
 });
 
 const rdTestAiService = axios.create({
@@ -13,7 +23,7 @@ const rdTestAiService = axios.create({
 });
 
 export const authCode = async (userId: string) => {
-  return await rdTestService.get('/authCode', {
+  return await rdTestServiceProxy.get('/EpWeChatLogin/authCode', {
     params: {
       operation: 'AI',
       userId,
@@ -22,7 +32,7 @@ export const authCode = async (userId: string) => {
 };
 
 export const login = async (userId: string, code: string) => {
-  return await rdTestService.get('/login', {
+  return await rdTestServiceProxy.get<LoginData>('/EpWeChatLogin/login', {
     params: {
       code,
       userId,
@@ -31,27 +41,22 @@ export const login = async (userId: string, code: string) => {
 };
 
 export const refreshToken = async (refreshToken: string) => {
-  return await rdTestService.post('/refreshToken', {
+  return await rdTestLoginService.post<RefreshData>('/token/refresh', {
     params: {
       refreshToken,
     },
   });
 };
 
-export const judgment = async (
-  token: string,
-): Promise<AxiosResponse<GenerateResponseData>> => {
-  return await rdTestAiService.get('/auth/judgment', {
+export const judgment = async (token: string) => {
+  return await rdTestAiService.get<JudgmentData>('/auth/judgment', {
     headers: {
       'x-authorization': `bearer ${token}`,
     },
   });
 };
 
-export const generate = async (
-  baseURL: string,
-  data: GenerateRequestData,
-): Promise<AxiosResponse<GenerateResponseData>> => {
+export const generate = async (baseURL: string, data: GenerateRequestData) => {
   return await axios
     .create({
       baseURL,

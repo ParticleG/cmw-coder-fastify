@@ -1,4 +1,4 @@
-authRequired = false
+authRequired = true
 
 [[endpoints]]
 endpoint = "http://10.113.36.104"

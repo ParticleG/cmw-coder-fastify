@@ -6,10 +6,11 @@ import { join, resolve } from 'path';
 import { cwd } from 'process';
 import { parse } from 'toml';
 
+import { ModelType } from "types/common";
+
 const ajv = new Ajv();
 export interface ConfigType {
-  auth: boolean;
-  currentModel: ModelType;
+  authRequired: boolean;
   endpoints: {
     endpoint: string;
     model: ModelType;
@@ -41,13 +42,9 @@ export interface ConfigType {
 const validate = ajv.compile({
   type: 'object',
   properties: {
-    auth: {
+    authRequired: {
       type: 'boolean',
       default: false,
-    },
-    currentModel: {
-      type: 'string',
-      default: 'CMW',
     },
     endpoints: {
       type: 'array',
