@@ -5,9 +5,10 @@ import { join, resolve } from 'path';
 import { cwd } from 'process';
 import { parse } from 'toml';
 
-import { ModelType } from "types/common";
+import { ModelType } from 'types/common';
 
 const ajv = new Ajv();
+
 export interface ConfigType {
   authRequired: boolean;
   availableModels: ModelType[];
@@ -36,6 +37,9 @@ export interface ConfigType {
   server: {
     host: string;
     port: number;
+  };
+  statistics: {
+    endpoint: string;
   };
 }
 
@@ -147,12 +151,20 @@ const validate = ajv.compile({
         },
       },
     },
+    statistics: {
+      type: 'object',
+      properties: {
+        endpoint: {
+          type: 'string',
+        },
+      },
+    },
   },
 });
 
 export default fastifyPlugin(async (fastify) => {
   const config = parse(
-    readFileSync(resolve(join(cwd(), 'config-green.toml'))).toString(),
+    readFileSync(resolve(join(cwd(), 'config.toml'))).toString(),
   );
   if (!validate(config)) {
     throw validate.errors;

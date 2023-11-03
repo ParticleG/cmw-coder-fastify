@@ -5,7 +5,7 @@ import { loginSchema, loginType } from 'routes/auth/schema';
 
 export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
   fastify.post<loginType>(
-    '/auth/login',
+    '/login',
     { schema: loginSchema },
     async (request) => {
       const { code } = request.body;

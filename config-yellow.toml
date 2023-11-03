@@ -1,10 +1,10 @@
 authRequired = true
 
-availableModels = [ "LINSEER" ]
+availableModels = [ "LS13B" ]
 
 [[endpoints]]
 endpoint = "http://rdtest.h3c.com/kong/RdTestAiService/chatgpt"
-model = "LINSEER"
+model = "LS13B"
 
 [promptExtractor]
 contextLimit = 1_500
@@ -19,7 +19,7 @@ temperature = 0.2
   snippet = 128
 
   [[promptProcessor.separateTokens]]
-  model = "LINSEER"
+  model = "LS13B"
   end = ""
   middle = ""
   start = ""

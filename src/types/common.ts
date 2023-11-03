@@ -1,1 +1,1 @@
-export type ModelType = 'CMW' | 'CODELLAMA' | "LINSEER";
+export type ModelType = 'CMW' | 'CODELLAMA' | "LS13B";
