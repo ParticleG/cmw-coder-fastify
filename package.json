@@ -1,18 +1,22 @@
 {
   "name": "cmw-coder-fastify",
   "description": "This project was bootstrapped with Fastify-CLI.",
-  "version": "0.6.0",
+  "version": "0.6.2",
   "main": "server.ts",
   "scripts": {
     "build": "node build.mjs",
     "dev": "tsx watch server.ts",
     "format": "prettier --write server.ts src/",
-    "publish": "node build.mjs && nexe build/server.js -t windows-x64-14.15.3 -o dist/cmw-coder-fastify"
+    "publish": "node build.mjs && nexe build/server.js -t windows-x64-14.15.3 -r \"./src/assets/**/*\" -o dist/cmw-coder-fastify"
   },
   "keywords": [],
   "author": "ParticleG",
   "license": "ISC",
+  "resourceFiles": [
+    "src/assets/**/*"
+  ],
   "dependencies": {
+    "@el3um4s/run-vbs": "^1.1.2",
     "@fastify/sensible": "^5.3.0",
     "@iarna/toml": "^2.2.5",
     "ajv": "^8.12.0",
@@ -24,6 +28,7 @@
     "fastify-cli": "^5.8.0",
     "fastify-plugin": "^4.5.1",
     "iconv-lite": "^0.6.3",
+    "lowdb": "^6.1.1",
     "prettier": "^3.0.3",
     "systray2": "^2.1.4",
     "toml": "^3.0.0",

@@ -1,11 +1,11 @@
-import { ModelType } from "types/config";
+import { ModelType } from 'types/common';
 
 export interface SwitchModelEvent {
-  modelType: ModelType
+  modelType: ModelType;
 }
 
 export interface ExitEvent {
-  code: number
+  code: number;
 }
 
 export interface ItemEventMap {

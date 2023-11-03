@@ -58,7 +58,7 @@ export class Position {
   }
 
   /**
-   * A function that compares positions, useful for sorting
+   * A function that compares positions useful for sorting
    */
   public static compare(a: IPosition, b: IPosition): number {
     const aLineNumber = a.line | 0;
@@ -117,14 +117,14 @@ export class Position {
   }
 
   /**
-   * Test if this position equals other position
+   * Test if this position equals another position
    */
   public equals(other: IPosition): boolean {
     return Position.equals(this, other);
   }
 
   /**
-   * Test if this position is before other position.
+   * Test if this position is before another position.
    * If the two positions are equal, the result will be false.
    */
   public isBefore(other: IPosition): boolean {
@@ -132,7 +132,7 @@ export class Position {
   }
 
   /**
-   * Test if this position is before other position.
+   * Test if this position is before another position.
    * If the two positions are equal, the result will be true.
    */
   public isBeforeOrEqual(other: IPosition): boolean {

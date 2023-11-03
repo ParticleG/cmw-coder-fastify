@@ -1,3 +1,27 @@
+export interface JudgmentData {
+  code: number;
+  data: number;
+  error?: string;
+  exception: [] | null;
+  msg: string | null;
+  refreshedToken: string | null;
+  token: string | null;
+}
+
+export interface LoginData {
+  userId: string;
+  token: string;
+  refreshToken: string;
+  error: string | null;
+}
+
+export interface RefreshData {
+  access_token: string;
+  expires_in: number;
+  refresh_token: string;
+  token_type: 'bearer';
+}
+
 export interface GenerateRequestData {
   inputs: string;
   parameters: {
@@ -9,6 +33,18 @@ export interface GenerateRequestData {
     temperature: number;
     top_p: number;
   };
+}
+
+export interface GenerateRdRequestData {
+  question: string;
+  model: 'linseer-code-13b' | 'linseer-code-34b';
+  maxTokens: number;
+  temperature: number;
+  stop: string[];
+  suffix: string;
+  plugin: 'SI';
+  profileModel: '百业灵犀-13B';
+  templateName: 'LineCode' | 'ShortLineCode';
 }
 
 interface GenerateDetailPrefill {
@@ -37,4 +73,12 @@ interface GenerateDetail extends GenerateDetailInternal {
 export interface GenerateResponseData {
   details: GenerateDetail;
   generated_text: string;
+}
+
+export interface GenerateRdResponseData {
+  text: string;
+  code: string;
+  sessionId: number;
+  finishReason: 'length' | 'stop';
+  model: 'linseer-code-13b' | 'linseer-code-34b';
 }

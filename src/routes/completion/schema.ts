@@ -77,10 +77,36 @@
 //   };
 // }
 
+export const acceptSchema = {
+  body: {
+    type: 'object',
+    required: ['completion', 'projectId', 'version'],
+    properties: {
+      completion: {
+        type: 'string',
+      },
+      projectId: {
+        type: 'string',
+      },
+      version: {
+        type: 'string',
+      },
+    },
+  },
+};
+
+export interface acceptType {
+  Body: {
+    completion: string;
+    projectId: string;
+    version: string;
+  };
+}
+
 export const generateSchema = {
   body: {
     type: 'object',
-    required: ['info', 'projectId'],
+    required: ['info', 'projectId', 'version'],
     properties: {
       info: {
         type: 'string',

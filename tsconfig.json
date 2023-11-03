@@ -2,9 +2,7 @@
   "extends": "fastify-tsconfig",
   "compilerOptions": {
     "baseUrl": ".",
-    "module": "ESNext",
     "sourceMap": true,
-    "target": "ESNext",
     "paths": {
       "app/*": [
         "./*"

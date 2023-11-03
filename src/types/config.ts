@@ -1,17 +1,17 @@
-import { JsonMap, stringify } from '@iarna/toml';
 import Ajv from 'ajv';
 import fastifyPlugin from 'fastify-plugin';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { cwd } from 'process';
 import { parse } from 'toml';
 
+import { ModelType } from 'types/common';
+
 const ajv = new Ajv();
 
-export type ModelType = 'CMW' | 'CODELLAMA';
-
 export interface ConfigType {
-  currentModel: ModelType;
+  authRequired: boolean;
+  availableModels: ModelType[];
   endpoints: {
     endpoint: string;
     model: ModelType;
@@ -38,14 +38,17 @@ export interface ConfigType {
     host: string;
     port: number;
   };
+  statistics: {
+    endpoint: string;
+  };
 }
 
 const validate = ajv.compile({
   type: 'object',
   properties: {
-    currentModel: {
-      type: 'string',
-      default: 'CMW',
+    authRequired: {
+      type: 'boolean',
+      default: false,
     },
     endpoints: {
       type: 'array',
@@ -148,32 +151,30 @@ const validate = ajv.compile({
         },
       },
     },
+    statistics: {
+      type: 'object',
+      properties: {
+        endpoint: {
+          type: 'string',
+        },
+      },
+    },
   },
 });
 
 export default fastifyPlugin(async (fastify) => {
-  const config = parse(readFileSync(resolve(join(cwd(), 'config.toml'))).toString());
+  const config = parse(
+    readFileSync(resolve(join(cwd(), 'config.toml'))).toString(),
+  );
   if (!validate(config)) {
     throw validate.errors;
   }
   fastify.config = config as ConfigType;
-
-  fastify.updateConfig = (newConfig: Partial<ConfigType>) => {
-    fastify.config = {
-      ...fastify.config,
-      ...newConfig,
-    };
-    writeFileSync(
-      resolve(join(cwd(), 'config.toml')),
-      stringify(fastify.config as unknown as JsonMap),
-    );
-  };
 });
 
 declare module 'fastify' {
   // noinspection JSUnusedGlobalSymbols
   interface FastifyInstance {
     config: ConfigType;
-    updateConfig: (newConfig: Partial<ConfigType>) => void;
   }
 }

@@ -28,18 +28,7 @@ export const ROOT_FOLDERS = [
   'X86PLAT',
 ];
 
-export const SUPPORTED_LANGUAGES = [
-  'c',
-  'cpp',
-  'html',
-  'json',
-  'jsonc',
-  'makefile',
-  'xml',
-];
-
 export const REGEXP_WORD = /[^a-zA-Z0-9]/;
-export const REGEXP_VARIABLE = /[^a-zA-Z_$0-9]/;
 
 export const IGNORE_RESERVED_KEYWORDS = new Set([
   'assert',
@@ -192,72 +181,4 @@ export const IGNORE_COMWARE_INTERNAL = new Set([
   'E', //? Enum
   'S', //? Struct
   'T', //? Typedef
-]);
-
-export const IGNORE_COMWARE_KEYWORD = new Set([
-  '__innerSASSERTCORE',
-  '__innerSASSERTCORE2',
-  'ARRAY_SIZE',
-  'BIT_COMPARE',
-  'BIT_MATCH',
-  'BIT_RESET',
-  'BIT_SET',
-  'BIT_TEST',
-  'BOOL_FALSE',
-  'BOOL_TRUE',
-  'BYTESWAP_ONDEMAND_64',
-  'BYTESWAP_ONDEMAND_I',
-  'BYTESWAP_ONDEMAND_S',
-  'CHAR',
-  'COMWARE_LEOPARD_VERSION',
-  'container_of',
-  'DISABLE',
-  'DOUBLE',
-  'ENABLE',
-  'FLOAT',
-  'FROZEN_IMPL',
-  'hton64',
-  'htonl',
-  'htons',
-  'IF_INDEX',
-  'IN',
-  'INLINE',
-  'INOUT',
-  'INT',
-  'INT16',
-  'INT32',
-  'INT8',
-  'ISSU',
-  'ISSUASSERT',
-  'likely',
-  'LIP_ADDR',
-  'LONG',
-  'MAC_ADDR_LEN',
-  'MODULE_CONSTRUCT',
-  'MODULE_DESTRUCT',
-  'MT_INDEX',
-  'NOINLSTATIC',
-  'ntoh64',
-  'ntohl',
-  'ntohs',
-  'NULL',
-  'offsetof',
-  'OUT',
-  'SHORT',
-  'STATIC',
-  'STATICASSERT',
-  'UCHAR',
-  'UCM_USERLABEL',
-  'UINT',
-  'UINT16',
-  'UINT32',
-  'UINT64',
-  'UINT8',
-  'ULONG',
-  'unlikely',
-  'USHORT',
-  'VOID',
-  'VRF_ANY',
-  'VRF_INDEX',
-  'ZONE_ID',
 ]);

@@ -1,4 +1,6 @@
-currentModel = "CMW"
+authRequired = false
+
+availableModels = [ "CMW", "CODELLAMA" ]
 
 [[endpoints]]
 endpoint = "http://10.113.36.104"
@@ -17,8 +19,8 @@ suggestionCount = 1
 temperature = 0.2
 
   [promptProcessor.maxNewTokens]
-  line = 60
-  snippet = 512
+  line = 16
+  snippet = 128
 
   [[promptProcessor.separateTokens]]
   model = "CMW"
@@ -35,3 +37,6 @@ temperature = 0.2
 [server]
 host = "localhost"
 port = 3000
+
+[statistics]
+endpoint = "http://10.113.36.121/kong/RdTestResourceStatistic"

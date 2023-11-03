@@ -1,9 +1,13 @@
 import { ErrorObject } from 'ajv/lib/types';
 import Fastify from 'fastify';
+
 import App from 'app/src/app';
+import { databaseManager } from 'components/DatabaseManager';
 import { SystemTray } from 'components/SystemTray';
 import Config from 'types/config';
 import { Logger, LogLevel } from 'types/Logger';
+import * as console from 'console';
+import { loginPrompt } from 'utils/script';
 
 const fastify = Fastify({
   logger: {
@@ -18,14 +22,21 @@ async function main() {
 
   fastify.register(App, fastify.config);
 
-  const systemTray = new SystemTray(fastify.config.currentModel);
+  if (!databaseManager.getModelType()) {
+    databaseManager.setModelType(fastify.config.availableModels[0]);
+  }
+
+  const systemTray = new SystemTray(
+    databaseManager.getModelType(),
+    fastify.config.availableModels,
+  );
 
   systemTray.on('exitItemClick', async () => {
     await fastify.close();
   });
 
   systemTray.on('modelItemClick', async ({ modelType }) => {
-    fastify.updateConfig({ currentModel: modelType });
+    databaseManager.setModelType(fastify.config.availableModels[0]);
   });
 
   fastify.listen(
@@ -49,6 +60,12 @@ async function main() {
         `http://${fastify.config.server.host}:${fastify.config.server.port}`,
       ),
   );
+
+  if (fastify.config.authRequired) {
+    if (!(await databaseManager.accessToken())) {
+      await loginPrompt();
+    }
+  }
 }
 
 main().catch((errors) => {

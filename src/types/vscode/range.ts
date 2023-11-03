@@ -14,7 +14,7 @@ export interface IRange {
 }
 
 /**
- * A range in the editor. (start.line,start.character) is <= (end.line,end.character)
+ * A range in the editor. (start.line, start.character) is <= (end.line, end.character)
  */
 export class Range {
   public readonly start: Position;
