@@ -84,7 +84,7 @@ export class SystemTray {
           } as MenuItemClickable,
         ],
       },
-      copyDir: String.raw`\\h3cbjnt23-fs/软件平台3/V7DEV/Comware Leopard 工具/SI插件/traybin`,
+      copyDir: './traybin',
     });
 
     this.systray
