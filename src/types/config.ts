@@ -164,7 +164,7 @@ const validate = ajv.compile({
 
 export default fastifyPlugin(async (fastify) => {
   const config = parse(
-    readFileSync(resolve(join(cwd(), 'config-green.toml'))).toString(),
+    readFileSync(resolve(join(cwd(), 'config.toml'))).toString(),
   );
   if (!validate(config)) {
     throw validate.errors;
