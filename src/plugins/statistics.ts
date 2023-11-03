@@ -19,10 +19,7 @@ const constructData = (
   isAccept: boolean,
 ) => {
   const isSnippet = completion[0] === '1';
-  const content = isSnippet
-    ? completion.substring(1)
-    : completion.substring(1).split('\\r\\n')[0];
-  const lines = content.split('\\r\\n').length;
+  const lines = isSnippet ? completion.substring(1).split('\\r\\n').length : 1;
   const basicData = {
     begin: Math.floor(startTime / 1000),
     end: Math.floor(endTime / 1000),
@@ -40,12 +37,13 @@ const constructData = (
       ...basicData,
       count: lines,
       firstClass: 'CODE',
-      skuName: isAccept ? 'ADOPT' : 'GENE',
-    },
-    {
-      ...basicData,
-      count: content.length,
-      firstClass: isAccept ? 'ADOPT_CHAR' : 'GENE_CHAR',
+      skuName: isSnippet
+        ? isAccept
+          ? 'KEEP_MULTI'
+          : 'GENE_MULTI'
+        : isAccept
+        ? 'KEEP'
+        : 'GENE',
     },
   ];
 };
