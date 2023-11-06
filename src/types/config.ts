@@ -1,6 +1,7 @@
 import Ajv from 'ajv';
 import fastifyPlugin from 'fastify-plugin';
 import { readFileSync } from 'fs';
+import { userInfo } from 'os';
 import { join, resolve } from 'path';
 import { cwd } from 'process';
 import { parse } from 'toml';
@@ -41,6 +42,7 @@ export interface ConfigType {
   statistics: {
     endpoint: string;
   };
+  username: string;
 }
 
 const validate = ajv.compile({
@@ -158,6 +160,10 @@ const validate = ajv.compile({
           type: 'string',
         },
       },
+    },
+    username: {
+      type: 'string',
+      default: userInfo().username,
     },
   },
 });

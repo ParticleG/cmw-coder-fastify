@@ -7,7 +7,6 @@ import { cwd } from 'process';
 
 import { ModelType } from 'types/common';
 import { authCode, judgment, login, refreshToken } from 'utils/axios/index.js';
-import { USER_NAME } from 'utils/constants';
 
 interface Database {
   modelType?: ModelType;
@@ -35,8 +34,8 @@ class DatabaseManager {
     this._db.write();
   }
 
-  async authCode() {
-    await authCode(USER_NAME);
+  async authCode(username: string) {
+    await authCode(username);
   }
 
   async accessToken() {
@@ -54,8 +53,8 @@ class DatabaseManager {
     }
   }
 
-  async login(code: string) {
-    const { data } = await login(USER_NAME, code);
+  async login(username: string, code: string) {
+    const { data } = await login(username, code);
     console.log(data);
     if (!data.error) {
       this._db.data.tokens.access = data.token;

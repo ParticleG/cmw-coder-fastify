@@ -2,7 +2,6 @@ import axios from 'axios';
 import fastifyPlugin from 'fastify-plugin';
 
 import { databaseManager } from 'components/DatabaseManager';
-import { USER_NAME } from 'utils/constants';
 import { Range } from 'types/vscode/range';
 import { ModelType } from 'types/common';
 
@@ -15,6 +14,7 @@ const constructData = (
   endTime: number,
   projectId: string,
   version: string,
+  username: string,
   modelType: ModelType,
   isAccept: boolean,
 ) => {
@@ -28,7 +28,7 @@ const constructData = (
     secondClass: modelType,
     subType: projectId,
     type: 'AIGC',
-    user: USER_NAME,
+    user: username,
     userType: 'USER',
   };
 
@@ -56,6 +56,7 @@ export default fastifyPlugin(async (fastify) => {
     endTime: number,
     projectId: string,
     version: string,
+    username: string,
   ) => {
     try {
       await axios
@@ -70,6 +71,7 @@ export default fastifyPlugin(async (fastify) => {
             endTime,
             projectId,
             version,
+            username,
             databaseManager.getModelType() ?? fastify.config.availableModels[0],
             true,
           ),
@@ -84,6 +86,7 @@ export default fastifyPlugin(async (fastify) => {
     endTime: number,
     projectId: string,
     version: string,
+    username: string,
   ) => {
     if (currentCursor.end.line == lastCursor.end.line) {
       return;
@@ -101,6 +104,7 @@ export default fastifyPlugin(async (fastify) => {
             endTime,
             projectId,
             version,
+            username,
             databaseManager.getModelType() ?? fastify.config.availableModels[0],
             false,
           ),
@@ -126,6 +130,7 @@ declare module 'fastify' {
         endTime: number,
         projectId: string,
         version: string,
+        username: string,
       ) => void;
       generate: (
         completion: string,
@@ -133,6 +138,7 @@ declare module 'fastify' {
         endTime: number,
         projectId: string,
         version: string,
+        username: string,
       ) => Promise<void>;
       updateCursor: (cursor: Range) => void;
     };

@@ -1,7 +1,7 @@
 // @ts-ignore
 import escapeStringRegexp from 'escape-string-regexp';
 
-import { databaseManager } from "components/DatabaseManager";
+import { databaseManager } from 'components/DatabaseManager';
 import { ConfigType } from 'types/config';
 
 // Start with '//' or '#', or end with '{' or '*/'

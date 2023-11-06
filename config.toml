@@ -40,3 +40,6 @@ port = 3000
 
 [statistics]
 endpoint = "http://10.113.36.121/kong/RdTestResourceStatistic"
+
+# Uncomment to use custom username instead of user directory name
+# username = ""

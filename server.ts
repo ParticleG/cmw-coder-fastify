@@ -36,7 +36,7 @@ async function main() {
   });
 
   systemTray.on('modelItemClick', async ({ modelType }) => {
-    databaseManager.setModelType(fastify.config.availableModels[0]);
+    databaseManager.setModelType(modelType);
   });
 
   fastify.listen(
@@ -63,7 +63,7 @@ async function main() {
 
   if (fastify.config.authRequired) {
     if (!(await databaseManager.accessToken())) {
-      await loginPrompt();
+      await loginPrompt(fastify.config.username);
     }
   }
 }
