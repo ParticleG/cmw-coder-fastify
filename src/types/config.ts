@@ -8,7 +8,7 @@ import { parse } from 'toml';
 
 import { ModelType } from 'types/common';
 
-const ajv = new Ajv();
+const ajv = new Ajv({ useDefaults: true });
 
 export interface ConfigType {
   authRequired: boolean;
@@ -42,7 +42,7 @@ export interface ConfigType {
   statistics: {
     endpoint: string;
   };
-  username: string;
+  userId: string;
 }
 
 const validate = ajv.compile({
@@ -161,7 +161,7 @@ const validate = ajv.compile({
         },
       },
     },
-    username: {
+    userId: {
       type: 'string',
       default: userInfo().username,
     },

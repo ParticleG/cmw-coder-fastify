@@ -63,7 +63,7 @@ async function main() {
 
   if (fastify.config.authRequired) {
     if (!(await databaseManager.accessToken())) {
-      await loginPrompt(fastify.config.username);
+      await loginPrompt(fastify.config.userId);
     }
   }
 }

@@ -10,7 +10,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     async (request) => {
       const { code } = request.body;
       return {
-        success: await databaseManager.login(fastify.config.username, code),
+        success: await databaseManager.login(fastify.config.userId, code),
       };
     },
   );

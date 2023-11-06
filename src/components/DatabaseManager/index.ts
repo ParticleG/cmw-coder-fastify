@@ -55,11 +55,9 @@ class DatabaseManager {
 
   async login(username: string, code: string) {
     const { data } = await login(username, code);
-    console.log(data);
     if (!data.error) {
       this._db.data.tokens.access = data.token;
       this._db.data.tokens.refresh = data.refreshToken;
-      console.log(this._db.data.tokens);
       this._db.write();
       return true;
     }

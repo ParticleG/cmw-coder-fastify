@@ -35,7 +35,7 @@ export class PromptProcessor {
       if (databaseManager.getModelType() === 'LS13B') {
         let accessToken = await databaseManager.accessToken();
         if (!accessToken) {
-          await loginPrompt(this._config.username);
+          await loginPrompt(this._config.userId);
           accessToken = await databaseManager.accessToken();
         }
         processedSuggestions = this._processGeneratedSuggestions(
