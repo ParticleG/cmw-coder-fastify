@@ -5,6 +5,8 @@ npm-debug.log*
 
 # Runtime data
 pids
+traybin
+*.lowdb
 *.pid
 *.seed
 
@@ -63,4 +65,4 @@ test/types/index.js
 
 # compiled app
 dist
-/build/
+build
