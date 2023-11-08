@@ -27,6 +27,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
         Date.now(),
         projectId,
         version,
+        fastify.config.userId,
       );
       return {
         result: 'success',
@@ -62,7 +63,14 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
         );
         if (results.length && results[0].length) {
           fastify.statistics
-            .generate(results[0], startTime, Date.now(), projectId, version)
+            .generate(
+              results[0],
+              startTime,
+              Date.now(),
+              projectId,
+              version,
+              fastify.config.userId,
+            )
             .catch();
         }
         return {
