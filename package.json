@@ -1,7 +1,7 @@
 {
   "name": "cmw-coder-fastify",
   "description": "This project was bootstrapped with Fastify-CLI.",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "main": "server.ts",
   "scripts": {
     "build": "node build.mjs",
