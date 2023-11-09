@@ -1,6 +1,5 @@
 import 'core-js/actual/array/at';
 import * as console from 'console';
-import { createHash } from 'crypto';
 
 import { databaseManager } from 'components/DatabaseManager';
 import { PromptComponents } from 'components/PromptExtractor/types';
@@ -81,16 +80,16 @@ export class PromptProcessor {
     result.push(start + promptComponents.prefix);
     result.push(end + promptComponents.suffix);
     result.push(middle);
-    const promptString = result.join('');
+    return result.join('');
 
-    const promptKey = createHash('sha1').update(promptString).digest('base64');
-    const promptCached = this._cache.get(promptKey);
-    if (promptCached) {
-      return promptCached;
-    } else {
-      this._cache.put(promptKey, promptString);
-      return promptString;
-    }
+    // const promptKey = createHash('sha1').update(promptString).digest('base64');
+    // const promptCached = this._cache.get(promptKey);
+    // if (promptCached) {
+    //   return promptCached;
+    // } else {
+    //   this._cache.put(promptKey, promptString);
+    //   return promptString;
+    // }
   }
 
   private _processGeneratedSuggestions(
