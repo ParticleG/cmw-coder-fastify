@@ -16,7 +16,7 @@ suggestionCount = 1
 temperature = 0.2
 
   [promptProcessor.maxNewTokens]
-  line = 16
+  line = 48
   snippet = 128
 
   [[promptProcessor.separateTokens]]

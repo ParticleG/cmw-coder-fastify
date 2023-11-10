@@ -8,7 +8,7 @@ endpoint = "http://10.113.36.104"
 model = "CMW"
 
 [[endpoints]]
-endpoint = "http://10.113.36.111:9201"
+endpoint = "http://10.113.36.111"
 model = "CODELLAMA"
 
 [promptExtractor]
@@ -20,7 +20,7 @@ suggestionCount = 1
 temperature = 0.2
 
   [promptProcessor.maxNewTokens]
-  line = 16
+  line = 48
   snippet = 128
 
   [[promptProcessor.separateTokens]]
