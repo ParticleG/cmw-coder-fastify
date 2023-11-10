@@ -31,6 +31,7 @@ export class PromptProcessor {
       .digest('base64');
     const promptCached = this._cache.get(cacheKey);
     if (promptCached) {
+      console.log({ promptCached });
       return promptCached;
     }
 
