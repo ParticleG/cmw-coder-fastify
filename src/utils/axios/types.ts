@@ -45,6 +45,7 @@ export interface GenerateRdRequestData {
   plugin: 'SI';
   profileModel: '百业灵犀-13B';
   templateName: 'LineCode' | 'ShortLineCode';
+  subType: string
 }
 
 interface GenerateDetailPrefill {

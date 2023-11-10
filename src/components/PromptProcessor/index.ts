@@ -24,6 +24,7 @@ export class PromptProcessor {
   async process(
     promptComponents: PromptComponents,
     prefix: string,
+    projectId: string
   ): Promise<string[]> {
     const cacheKey = createHash('sha1')
       .update(promptComponents.prefix)
@@ -53,6 +54,7 @@ export class PromptProcessor {
             accessToken!,
             promptComponents,
             isSnippet,
+            projectId
           ),
           isSnippet,
         );
@@ -170,6 +172,7 @@ export class PromptProcessor {
     accessToken: string,
     promptComponents: PromptComponents,
     isSnippet: boolean,
+    projectId:string
   ): Promise<string[]> {
     const { maxNewTokens, stopTokens, temperature } =
       this._config.promptProcessor;
@@ -185,6 +188,7 @@ export class PromptProcessor {
         plugin: 'SI',
         profileModel: '百业灵犀-13B',
         templateName: isSnippet ? 'LineCode' : 'ShortLineCode',
+        subType: projectId,
       },
       accessToken,
     );

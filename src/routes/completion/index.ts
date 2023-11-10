@@ -60,6 +60,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
         const results = await new PromptProcessor(fastify.config).process(
           prompt,
           prefix,
+          projectId
         );
         if (results.length && results[0].length) {
           fastify.statistics
