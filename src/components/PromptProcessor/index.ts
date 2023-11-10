@@ -1,4 +1,5 @@
 import 'core-js/actual/array/at';
+import { createHash } from 'crypto';
 import * as console from 'console';
 
 import { databaseManager } from 'components/DatabaseManager';
@@ -13,7 +14,7 @@ import { generate, generateRd } from 'utils/axios';
 import { loginPrompt } from 'utils/script';
 
 export class PromptProcessor {
-  private _cache = new LRUCache<string>(100);
+  private _cache = new LRUCache<string[]>(100);
   private _config: ConfigType;
 
   constructor(config: ConfigType) {
@@ -24,6 +25,14 @@ export class PromptProcessor {
     promptComponents: PromptComponents,
     prefix: string,
   ): Promise<string[]> {
+    const cacheKey = createHash('sha1')
+      .update(promptComponents.prefix)
+      .digest('base64');
+    const promptCached = this._cache.get(cacheKey);
+    if (promptCached) {
+      return promptCached;
+    }
+
     const endpoint =
       this._config.endpoints.find(
         (endpoint) => endpoint.model == databaseManager.getModelType(),
@@ -59,6 +68,9 @@ export class PromptProcessor {
       console.warn(e);
     }
     console.log({ processedSuggestions });
+    if (processedSuggestions.length) {
+      this._cache.put(cacheKey, processedSuggestions);
+    }
     return processedSuggestions;
   }
 
@@ -81,15 +93,6 @@ export class PromptProcessor {
     result.push(end + promptComponents.suffix);
     result.push(middle);
     return result.join('');
-
-    // const promptKey = createHash('sha1').update(promptString).digest('base64');
-    // const promptCached = this._cache.get(promptKey);
-    // if (promptCached) {
-    //   return promptCached;
-    // } else {
-    //   this._cache.put(promptKey, promptString);
-    //   return promptString;
-    // }
   }
 
   private _processGeneratedSuggestions(
