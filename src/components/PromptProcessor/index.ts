@@ -24,7 +24,7 @@ export class PromptProcessor {
   async process(
     promptComponents: PromptComponents,
     prefix: string,
-    projectId: string
+    projectId: string,
   ): Promise<string[]> {
     const cacheKey = createHash('sha1')
       .update(promptComponents.prefix)
@@ -55,7 +55,7 @@ export class PromptProcessor {
             accessToken!,
             promptComponents,
             isSnippet,
-            projectId
+            projectId,
           ),
           isSnippet,
         );
@@ -173,7 +173,7 @@ export class PromptProcessor {
     accessToken: string,
     promptComponents: PromptComponents,
     isSnippet: boolean,
-    projectId:string
+    projectId: string,
   ): Promise<string[]> {
     const { maxNewTokens, stopTokens, temperature } =
       this._config.promptProcessor;
