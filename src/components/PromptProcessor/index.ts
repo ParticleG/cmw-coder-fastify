@@ -6,6 +6,7 @@ import { databaseManager } from 'components/DatabaseManager';
 import { PromptComponents } from 'components/PromptExtractor/types';
 import { LRUCache } from 'components/PromptProcessor/types';
 import {
+  checkLineIndented,
   checkMultiLine,
   removeRedundantTokens,
 } from 'components/PromptProcessor/utils';
@@ -40,6 +41,7 @@ export class PromptProcessor {
         (endpoint) => endpoint.model == databaseManager.getModelType(),
       )?.endpoint ?? this._config.endpoints[0].endpoint;
     const isSnippet = checkMultiLine(prefix);
+    const isIndented = checkLineIndented(prefix);
     let processedSuggestions: string[] = [];
     try {
       if (databaseManager.getModelType() === 'LS13B') {
@@ -54,7 +56,7 @@ export class PromptProcessor {
             endpoint,
             accessToken!,
             promptComponents,
-            isSnippet,
+            isSnippet && isIndented,
             projectId,
           ),
           isSnippet,
@@ -63,7 +65,7 @@ export class PromptProcessor {
         const promptString = this._getPromptString(promptComponents);
         processedSuggestions = this._processGeneratedSuggestions(
           promptString,
-          await this._generate(endpoint, promptString, isSnippet),
+          await this._generate(endpoint, promptString, isSnippet && isIndented),
           isSnippet,
         );
       }

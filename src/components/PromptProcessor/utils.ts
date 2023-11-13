@@ -23,3 +23,11 @@ export const removeRedundantTokens = (config: ConfigType, text: string) => {
 export const checkMultiLine = (prefix: string): boolean => {
   return detectRegex.test(prefix.trimEnd().split('\n').at(-1) ?? '');
 };
+
+export const checkLineIndented = (prefix: string): boolean => {
+  let indent = (prefix.trimEnd().split('\n').at(-1) ?? "").match(/^\s*/);
+  if (indent && indent[0].length > 0) {
+    return true;
+  }
+  return false;
+};
