@@ -56,7 +56,7 @@ export class PromptProcessor {
             endpoint,
             accessToken!,
             promptComponents,
-            isSnippet && isIndented,
+            isSnippet && !isIndented,
             projectId,
           ),
           isSnippet,
@@ -65,7 +65,7 @@ export class PromptProcessor {
         const promptString = this._getPromptString(promptComponents);
         processedSuggestions = this._processGeneratedSuggestions(
           promptString,
-          await this._generate(endpoint, promptString, isSnippet && isIndented),
+          await this._generate(endpoint, promptString, isSnippet && !isIndented),
           isSnippet,
         );
       }
