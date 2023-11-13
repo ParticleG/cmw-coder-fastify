@@ -37,7 +37,7 @@ export interface GenerateRequestData {
 
 export interface GenerateRdRequestData {
   question: string;
-  model: 'linseer-code-13b' | 'linseer-code-34b';
+  model: 'linseer-code-13b' | 'linseer-code-34b' | 'linseer-code-13b-sr88drv';
   maxTokens: number;
   temperature: number;
   stop: string[];

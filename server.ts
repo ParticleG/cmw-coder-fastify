@@ -23,12 +23,12 @@ async function main() {
   fastify.register(App, fastify.config);
 
   if (!databaseManager.getModelType()) {
-    databaseManager.setModelType(fastify.config.availableModels[0]);
+    databaseManager.setModelType(fastify.config.modelConfigs[0].modelType);
   }
 
   const systemTray = new SystemTray(
-    databaseManager.getModelType(),
-    fastify.config.availableModels,
+    databaseManager.getModelType()!,
+    fastify.config.modelConfigs.map((modelConfig) => modelConfig.modelType),
   );
 
   systemTray.on('exitItemClick', async () => {

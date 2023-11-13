@@ -1,20 +1,17 @@
 // @ts-ignore
 import escapeStringRegexp from 'escape-string-regexp';
 
-import { databaseManager } from 'components/DatabaseManager';
-import { ConfigType } from 'types/config';
+import { ModelConfigType } from "types/config";
 
 // Start with '//' or '#', or end with '{' or '*/'
 const detectRegex = /^(\/\/|#)|(\{|\*\/)$/;
 
-export const removeRedundantTokens = (config: ConfigType, text: string) => {
-  const separateTokens =
-    config.promptProcessor.separateTokens.find(
-      (separateToken) => separateToken.model == databaseManager.getModelType(),
-    ) ?? config.promptProcessor.separateTokens[0];
-  const { start, end, middle } = separateTokens;
-  const { stopTokens } = config.promptProcessor;
-  const regExp = `(${[end, middle, start, ...stopTokens]
+export const removeRedundantTokens = (modelConfig: ModelConfigType, text: string) => {
+  if (!modelConfig.separateTokens) {
+    return text;
+  }
+  const { start, end, middle } = modelConfig.separateTokens;
+  const regExp = `(${[end, middle, start, ...modelConfig.stopTokens]
     .map((token) => escapeStringRegexp(token))
     .join('|')})`;
   return text.replace(new RegExp(regExp, 'g'), '');

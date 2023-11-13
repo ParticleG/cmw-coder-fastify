@@ -5,6 +5,7 @@ import { JSONSyncPreset } from 'lowdb/node';
 import { join } from 'path';
 import { cwd } from 'process';
 
+import packageJson from 'app/package.json';
 import { ModelType } from 'types/common';
 import { authCode, judgment, login, refreshToken } from 'utils/axios/index.js';
 
@@ -14,6 +15,7 @@ interface Database {
     access: string;
     refresh: string;
   };
+  version: string;
 }
 
 const defaultData = (): Database => ({
@@ -21,6 +23,7 @@ const defaultData = (): Database => ({
     access: '',
     refresh: '',
   },
+  version: packageJson.version,
 });
 
 class DatabaseManager {
@@ -31,6 +34,11 @@ class DatabaseManager {
       join(cwd(), 'data.lowdb'),
       defaultData(),
     );
+    const [currentMajor, currentMinor] = packageJson.version.split('.');
+    const [dbMajor, dbMinor] = this._db.data.version.split('.');
+    if (dbMajor !== currentMajor || dbMinor !== currentMinor) {
+      this._db.data = defaultData();
+    }
     this._db.write();
   }
 

@@ -11,15 +11,15 @@ import {
 } from 'utils/axios/types';
 
 const rdTestServiceProxy = axios.create({
-  baseURL: 'http://rdtest.h3c.com/kong/RdTestServiceProxy-e',
+  baseURL: 'http://rdee.h3c.com/kong/RdTestServiceProxy-e',
 });
 
 const rdTestLoginService = axios.create({
-  baseURL: 'http://rdtest.h3c.com/kong/RdTestLoginService/api',
+  baseURL: 'http://rdee.h3c.com/kong/RdTestLoginService/api',
 });
 
 const rdTestAiService = axios.create({
-  baseURL: 'http://rdtest.h3c.com/kong/RdTestAiService',
+  baseURL: 'http://rdee.h3c.com/kong/RdTestAiService',
 });
 
 export const authCode = async (userId: string) => {

@@ -8,6 +8,13 @@ import { ModelType } from 'types/common';
 let currentCursor: Range = new Range(0, 0, 0, 0);
 let lastCursor: Range = new Range(0, 0, 0, 0);
 
+const secondClassMap = new Map<ModelType, string>([
+  ["Comware-V1", "CMW"],
+  ["Comware-V2", "CODELLAMA"],
+  ["Linseer", "LS13B"],
+  ["Linseer-SR88Driver", "LS13B"],
+]);
+
 const constructData = (
   completion: string,
   startTime: number,
@@ -25,7 +32,7 @@ const constructData = (
     end: Math.floor(endTime / 1000),
     extra: version,
     product: 'SI',
-    secondClass: modelType,
+    secondClass: secondClassMap.get(modelType),
     subType: projectId,
     type: 'AIGC',
     user: username,
@@ -61,7 +68,7 @@ export default fastifyPlugin(async (fastify) => {
     try {
       await axios
         .create({
-          baseURL: fastify.config.statistics.endpoint,
+          baseURL: fastify.config.statistics,
         })
         .post(
           '/report/summary',
@@ -72,7 +79,7 @@ export default fastifyPlugin(async (fastify) => {
             projectId,
             version,
             username,
-            databaseManager.getModelType() ?? fastify.config.availableModels[0],
+            databaseManager.getModelType() ?? fastify.config.modelConfigs[0].modelType,
             true,
           ),
         );
@@ -94,7 +101,7 @@ export default fastifyPlugin(async (fastify) => {
     try {
       await axios
         .create({
-          baseURL: fastify.config.statistics.endpoint,
+          baseURL: fastify.config.statistics,
         })
         .post(
           '/report/summary',
@@ -105,7 +112,7 @@ export default fastifyPlugin(async (fastify) => {
             projectId,
             version,
             username,
-            databaseManager.getModelType() ?? fastify.config.availableModels[0],
+            databaseManager.getModelType() ?? fastify.config.modelConfigs[0].modelType,
             false,
           ),
         );

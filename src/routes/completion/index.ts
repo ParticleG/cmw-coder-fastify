@@ -1,7 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import { decode, encode } from 'iconv-lite';
 
-import { databaseManager } from 'components/DatabaseManager';
 import { PromptExtractor } from 'components/PromptExtractor';
 import { PromptProcessor } from 'components/PromptProcessor';
 import {
@@ -13,6 +12,7 @@ import {
 import { parseEditorInfo } from 'routes/completion/utils';
 import { TextDocument } from 'types/TextDocument';
 import * as console from 'console';
+import { Logger } from "types/Logger";
 
 export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
   fastify.post<acceptType>(
@@ -42,7 +42,12 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
       const startTime = Date.now();
       const { info, projectId, version } = request.body;
       const decodedInfo = decode(Buffer.from(info, 'base64'), 'gb2312');
-      // console.log(decodedInfo);
+
+      Logger.hint(
+        'route.completion',
+        JSON.stringify({ decodedInfo }, null, 2),
+      );
+
       try {
         const {
           currentFilePath,
@@ -56,7 +61,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
         const prompt = await new PromptExtractor(
           new TextDocument(currentFilePath),
           cursorRange.start,
-        ).getPromptComp(openedTabs, symbols, prefix, suffix);
+        ).getPromptComponents(openedTabs, symbols, prefix, suffix);
         const results = await new PromptProcessor(fastify.config).process(
           prompt,
           prefix,
@@ -79,8 +84,6 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           contents: results.map((result) =>
             encode(result, 'gb2312').toString('base64'),
           ),
-          modelType:
-            databaseManager.getModelType() ?? fastify.config.availableModels[0],
         };
       } catch (e) {
         console.warn(e);

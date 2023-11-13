@@ -1,43 +1,44 @@
-authRequired = false
-availableModels = [ "CMW", "CODELLAMA" ]
-#Uncomment to use custom userId instead of user directory name
-#userId = ""
+apiType = "HuggingFace"
+authRequired = true
+statistics = "http://10.113.36.121/kong/RdTestResourceStatistic"
+#userId = "" #Uncomment to use custom userId instead of user directory name
 
-[[endpoints]]
-endpoint = "http://10.113.36.104"
-model = "CMW"
-
-[[endpoints]]
-endpoint = "http://10.113.36.111"
-model = "CODELLAMA"
-
-[promptExtractor]
+[[modelConfigs]]
 contextLimit = 1_500
+endpoint = "http://10.113.36.104"
+modelType = "Comware-V1"
+stopTokens = [ "<fim_pad>", "<|endoftext|>", "\n}" ]
+suggestionCount = 1
+temperature = 0.2
 
-[promptProcessor]
+[modelConfigs.maxNewTokens]
+function = 512
+line = 48
+snippet = 128
+
+[modelConfigs.separateTokens]
+end = "<fim_suffix>"
+middle = "<fim_middle>"
+start = "<fim_prefix>"
+
+[[modelConfigs]]
+contextLimit = 1_500
+endpoint = "http://10.113.36.111"
+modelType = "Comware-V2"
 stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
 suggestionCount = 1
 temperature = 0.2
 
-  [promptProcessor.maxNewTokens]
-  line = 48
-  snippet = 128
+[modelConfigs.maxNewTokens]
+function = 512
+line = 48
+snippet = 128
 
-  [[promptProcessor.separateTokens]]
-  model = "CMW"
-  end = "<fim_suffix>"
-  middle = "<fim_middle>"
-  start = "<fim_prefix>"
-
-  [[promptProcessor.separateTokens]]
-  model = "CODELLAMA"
-  end = "▁<SUF>"
-  middle = "▁<MID>"
-  start = "▁<PRE>"
+[modelConfigs.separateTokens]
+end = "_<SUF>"
+middle = "_<MID>"
+start = "_<PRE>"
 
 [server]
 host = "localhost"
-port = 3000
-
-[statistics]
-endpoint = "http://10.113.36.121/kong/RdTestResourceStatistic"
+port = 3_000

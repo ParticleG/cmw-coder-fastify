@@ -1,33 +1,34 @@
+apiType = "Linseer"
 authRequired = true
-availableModels = [ "LS13B" ]
-#Uncomment to use custom userId instead of user directory name
-#userId = ""
+statistics = "http://rdee.h3c.com/kong/RdTestResourceStatistic"
+#userId = "" #Uncomment to use custom userId instead of user directory name
 
-[[endpoints]]
-endpoint = "http://rdtest.h3c.com/kong/RdTestAiService/chatgpt"
-model = "LS13B"
-
-[promptExtractor]
+[[modelConfigs]]
 contextLimit = 1_500
-
-[promptProcessor]
+endpoint = "http://rdee.h3c.com/kong/RdTestAiService/chatgpt"
+modelType = "Linseer"
 stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
 suggestionCount = 1
 temperature = 0.2
 
-  [promptProcessor.maxNewTokens]
-  line = 48
-  snippet = 128
+[modelConfigs.maxNewTokens]
+function = 512
+line = 48
+snippet = 128
 
-  [[promptProcessor.separateTokens]]
-  model = "LS13B"
-  end = ""
-  middle = ""
-  start = ""
+[[modelConfigs]]
+contextLimit = 1_500
+endpoint = "http://rdee.h3c.com/kong/RdTestAiService/chatgpt"
+modelType = "Linseer-SR88Driver"
+stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
+suggestionCount = 1
+temperature = 0.2
+
+[modelConfigs.maxNewTokens]
+function = 512
+line = 48
+snippet = 128
 
 [server]
 host = "localhost"
 port = 3000
-
-[statistics]
-endpoint = "http://rdtest.h3c.com/kong/RdTestResourceStatistic"

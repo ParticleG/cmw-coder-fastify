@@ -9,16 +9,26 @@ import {
   checkMultiLine,
   removeRedundantTokens,
 } from 'components/PromptProcessor/utils';
-import { ConfigType } from 'types/config';
+import { ApiType } from 'types/common';
+import { ConfigType, ModelConfigType } from 'types/config';
 import { generate, generateRd } from 'utils/axios';
 import { loginPrompt } from 'utils/script';
+import { Logger } from "types/Logger";
 
 export class PromptProcessor {
   private _cache = new LRUCache<string[]>(100);
-  private _config: ConfigType;
+  private readonly _apiType: ApiType;
+  private readonly _modelConfig: ModelConfigType;
+  private readonly _userId: string;
 
   constructor(config: ConfigType) {
-    this._config = config;
+    this._apiType = config.apiType;
+    this._modelConfig =
+      config.modelConfigs.find(
+        (modelConfig) =>
+          modelConfig.modelType == databaseManager.getModelType(),
+      ) ?? config.modelConfigs[0];
+    this._userId = config.userId;
   }
 
   async process(
@@ -31,25 +41,27 @@ export class PromptProcessor {
       .digest('base64');
     const promptCached = this._cache.get(cacheKey);
     if (promptCached) {
-      console.log({ promptCached });
+      Logger.log(
+        'PromptProcessor.process',
+        JSON.stringify({ promptCached }, null, 2),
+      );
       return promptCached;
     }
 
-    const endpoint =
-      this._config.endpoints.find(
-        (endpoint) => endpoint.model == databaseManager.getModelType(),
-      )?.endpoint ?? this._config.endpoints[0].endpoint;
+    const { endpoint } = this._modelConfig;
+    const promptString = this._getPromptString(promptComponents);
     const isSnippet = checkMultiLine(prefix);
     let processedSuggestions: string[] = [];
+
     try {
-      if (databaseManager.getModelType() === 'LS13B') {
+      if (this._apiType === 'Linseer') {
         let accessToken = await databaseManager.accessToken();
         if (!accessToken) {
-          await loginPrompt(this._config.userId);
+          await loginPrompt(this._userId);
           accessToken = await databaseManager.accessToken();
         }
         processedSuggestions = this._processGeneratedSuggestions(
-          promptComponents.prefix,
+          promptString,
           await this._generateRd(
             endpoint,
             accessToken!,
@@ -60,7 +72,7 @@ export class PromptProcessor {
           isSnippet,
         );
       } else {
-        const promptString = this._getPromptString(promptComponents);
+
         processedSuggestions = this._processGeneratedSuggestions(
           promptString,
           await this._generate(endpoint, promptString, isSnippet),
@@ -70,7 +82,10 @@ export class PromptProcessor {
     } catch (e) {
       console.warn(e);
     }
-    console.log({ processedSuggestions });
+    Logger.log(
+      'PromptProcessor.process',
+      JSON.stringify({ processedSuggestions }, null, 2),
+    );
     if (processedSuggestions.length) {
       this._cache.put(cacheKey, processedSuggestions);
     }
@@ -78,12 +93,10 @@ export class PromptProcessor {
   }
 
   private _getPromptString(promptComponents: PromptComponents): string {
-    const separateTokens =
-      this._config.promptProcessor.separateTokens.find(
-        (separateToken) =>
-          separateToken.model == databaseManager.getModelType(),
-      ) ?? this._config.promptProcessor.separateTokens[0];
-    const { start, end, middle } = separateTokens;
+    if (!this._modelConfig.separateTokens) {
+      return promptComponents.prefix;
+    }
+    const { start, end, middle } = this._modelConfig.separateTokens;
     const result = [];
 
     if (promptComponents.reponame.length) {
@@ -111,7 +124,7 @@ export class PromptProcessor {
           : generatedSuggestion,
       )
       .map((generatedSuggestion) =>
-        removeRedundantTokens(this._config, generatedSuggestion),
+        removeRedundantTokens(this._modelConfig, generatedSuggestion),
       )
       .filter((generatedSuggestion) => generatedSuggestion.length > 0)
       .map((generatedSuggestion) =>
@@ -133,7 +146,7 @@ export class PromptProcessor {
     isSnippet: boolean,
   ): Promise<string[]> {
     const { maxNewTokens, stopTokens, suggestionCount, temperature } =
-      this._config.promptProcessor;
+      this._modelConfig;
     const {
       data: {
         details: { best_of_sequences },
@@ -175,8 +188,7 @@ export class PromptProcessor {
     isSnippet: boolean,
     projectId: string,
   ): Promise<string[]> {
-    const { maxNewTokens, stopTokens, temperature } =
-      this._config.promptProcessor;
+    const { maxNewTokens, stopTokens, temperature } = this._modelConfig;
     const { data } = await generateRd(
       endpoint,
       {

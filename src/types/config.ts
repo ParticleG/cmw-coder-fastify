@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import Ajv, { JSONSchemaType } from 'ajv';
 import fastifyPlugin from 'fastify-plugin';
 import { readFileSync } from 'fs';
 import { userInfo } from 'os';
@@ -6,140 +6,128 @@ import { join, resolve } from 'path';
 import { cwd } from 'process';
 import { parse } from 'toml';
 
-import { ModelType } from 'types/common';
+import { ApiType, ModelType } from 'types/common';
 
 const ajv = new Ajv({ useDefaults: true });
 
+export interface ModelConfigType {
+  contextLimit: number;
+  endpoint: string;
+  maxNewTokens: {
+    function: number;
+    line: number;
+    snippet: number;
+  };
+  modelType: ModelType;
+  separateTokens?: {
+    end: string;
+    middle: string;
+    start: string;
+  };
+  stopTokens: string[];
+  suggestionCount: number;
+  temperature: number;
+}
+
 export interface ConfigType {
+  apiType: ApiType;
   authRequired: boolean;
-  availableModels: ModelType[];
-  endpoints: {
-    endpoint: string;
-    model: ModelType;
-  }[];
-  promptExtractor: {
-    contextLimit: number;
-  };
-  promptProcessor: {
-    maxNewTokens: {
-      line: number;
-      snippet: number;
-    };
-    separateTokens: {
-      end: string;
-      middle: string;
-      model: ModelType;
-      start: string;
-    }[];
-    stopTokens: string[];
-    suggestionCount: number;
-    temperature: number;
-  };
+  modelConfigs: ModelConfigType[];
   server: {
     host: string;
     port: number;
   };
-  statistics: {
-    endpoint: string;
-  };
+  statistics: string;
   userId: string;
 }
 
-const validate = ajv.compile({
+const validate = ajv.compile(<JSONSchemaType<ConfigType>>{
   type: 'object',
+  required: ['apiType', 'modelConfigs', 'statistics'],
+  additionalProperties: false,
   properties: {
+    apiType: {
+      type: 'string',
+    },
     authRequired: {
       type: 'boolean',
       default: false,
     },
-    endpoints: {
+    modelConfigs: {
       type: 'array',
       items: {
         type: 'object',
+        required: ['endpoint'],
+        additionalProperties: false,
         properties: {
+          contextLimit: {
+            type: 'number',
+            default: 1500,
+          },
           endpoint: {
             type: 'string',
-            default: 'http://10.113.36.104',
           },
-          model: {
-            type: 'string',
-            default: 'CMW',
-          },
-        },
-      },
-    },
-    promptExtractor: {
-      type: 'object',
-      properties: {
-        contextLimit: {
-          type: 'number',
-          default: 1500,
-        },
-      },
-    },
-    promptProcessor: {
-      type: 'object',
-      properties: {
-        maxNewTokens: {
-          type: 'object',
-          properties: {
-            line: {
-              type: 'number',
-              default: 60,
-            },
-            snippet: {
-              type: 'number',
-              default: 512,
-            },
-          },
-        },
-        separateTokens: {
-          type: 'array',
-          items: {
+          maxNewTokens: {
             type: 'object',
+            required: [],
+            additionalProperties: false,
+            properties: {
+              function: {
+                type: 'number',
+                default: 512,
+              },
+              line: {
+                type: 'number',
+                default: 48,
+              },
+              snippet: {
+                type: 'number',
+                default: 128,
+              },
+            },
+          },
+          modelType: {
+            type: 'string',
+          },
+          separateTokens: {
+            type: 'object',
+            required: ['end', 'middle', 'start'],
+            additionalProperties: false,
+            nullable: true,
             properties: {
               end: {
                 type: 'string',
-                default: '<fim_suffix>',
               },
               middle: {
                 type: 'string',
-                default: '<fim_middle>',
-              },
-              model: {
-                type: 'string',
-                default: 'CMW',
               },
               start: {
                 type: 'string',
-                default: '<fim_prefix>',
               },
             },
           },
-        },
-        stopTokens: {
-          type: 'array',
-          items: {
-            type: 'string',
+          stopTokens: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            default: [],
           },
-          default: ['<fim_pad>', '<|endoftext|>', '</s>', '\n}'],
-        },
-        suggestionCount: {
-          type: 'number',
-          default: 1,
-          minimum: 1,
-          maximum: 10,
-        },
-        temperature: {
-          type: 'number',
-          default: 0.2,
-          minimum: 0,
-          maximum: 1,
+          suggestionCount: {
+            type: 'number',
+            default: 1,
+          },
+          temperature: {
+            type: 'number',
+            default: 0.2,
+          },
         },
       },
     },
     server: {
       type: 'object',
+      required: [],
+      additionalProperties: false,
       properties: {
         host: {
           type: 'string',
@@ -148,18 +136,11 @@ const validate = ajv.compile({
         port: {
           type: 'number',
           default: 3000,
-          minimum: 0,
-          maximum: 65535,
         },
       },
     },
     statistics: {
-      type: 'object',
-      properties: {
-        endpoint: {
-          type: 'string',
-        },
-      },
+      type: 'string',
     },
     userId: {
       type: 'string',

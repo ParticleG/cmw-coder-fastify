@@ -22,17 +22,22 @@ const radioConfigs: {
   {
     title: 'CmwCoder 1.0',
     tooltip: 'CMW 模型',
-    modelType: 'CMW',
+    modelType: 'Comware-V1',
   },
   {
     title: 'CmwCoder 2.0',
     tooltip: 'CODELLAMA 模型',
-    modelType: 'CODELLAMA',
+    modelType: 'Comware-V2',
   },
   {
-    title: '百业灵犀',
-    tooltip: 'LINSEER 13B 模型',
-    modelType: 'LS13B',
+    title: '百业灵犀-通用',
+    tooltip: 'Linseer 13B & 34B 模型',
+    modelType: 'Linseer',
+  },
+  {
+    title: '百业灵犀-高端路由',
+    tooltip: 'Linseer 13B 模型 For SR88Driver',
+    modelType: 'Linseer-SR88Driver',
   },
 ];
 
@@ -44,7 +49,7 @@ export class SystemTray {
 
   private _handlerMap = new Map<keyof ItemEventMap, any>();
 
-  constructor(modelType: ModelType = 'CMW', availableModels: ModelType[]) {
+  constructor(modelType: ModelType, availableModels: ModelType[]) {
     this.modelType = modelType;
     this.modelItems = radioConfigs
       .filter((radioConfig) => availableModels.includes(radioConfig.modelType))
