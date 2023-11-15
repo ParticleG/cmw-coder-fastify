@@ -12,18 +12,36 @@ import {
 import { parseEditorInfo } from 'routes/completion/utils';
 import { TextDocument } from 'types/TextDocument';
 import * as console from 'console';
-import { Logger } from "types/Logger";
+import { Logger } from 'types/Logger';
 
 export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
   fastify.post<acceptType>(
     '/accept',
     { schema: acceptSchema },
     async (request) => {
-      const startTime = Date.now();
       const { completion, projectId, version } = request.body;
       fastify.statistics.accept(
         completion,
-        startTime,
+        Date.now(),
+        Date.now(),
+        projectId,
+        version,
+        fastify.config.userId,
+      );
+      return {
+        result: 'success',
+      };
+    },
+  );
+
+  fastify.post<acceptType>(
+    '/insert',
+    { schema: acceptSchema },
+    async (request) => {
+      const { completion, projectId, version } = request.body;
+      fastify.statistics.generate(
+        completion,
+        Date.now(),
         Date.now(),
         projectId,
         version,
@@ -39,14 +57,10 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     '/generate',
     { schema: generateSchema },
     async (request) => {
-      const startTime = Date.now();
-      const { info, projectId, version } = request.body;
+      const { info, projectId } = request.body;
       const decodedInfo = decode(Buffer.from(info, 'base64'), 'gb2312');
 
-      Logger.hint(
-        'route.completion',
-        JSON.stringify({ decodedInfo }, null, 2),
-      );
+      Logger.hint('route.completion', JSON.stringify({ decodedInfo }, null, 2));
 
       try {
         const {
@@ -67,18 +81,6 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           prefix,
           projectId,
         );
-        if (results.length && results[0].length) {
-          fastify.statistics
-            .generate(
-              results[0],
-              startTime,
-              Date.now(),
-              projectId,
-              version,
-              fastify.config.userId,
-            )
-            .catch();
-        }
         return {
           result: 'success',
           contents: results.map((result) =>
