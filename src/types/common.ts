@@ -14,7 +14,7 @@ export enum LinseerModelType {
 }
 
 export enum SubModelType {
-  'linseer-code-13b',
-  'linseer-code-13b-sr88drv',
-  'linseer-code-34b',
+  'linseer-code-13b' = "linseer-code-13b",
+  'linseer-code-13b-sr88drv' = "linseer-code-13b-sr88drv",
+  'linseer-code-34b' = "linseer-code-34b",
 }
