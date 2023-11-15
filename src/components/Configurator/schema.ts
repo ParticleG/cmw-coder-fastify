@@ -6,68 +6,72 @@ import { ApiStyle } from 'types/common';
 
 const HuggingFaceCompletionConfigSchema = {
   type: 'object',
-  required: [],
+  required: [
+    'contextLimit',
+    'endpoint',
+    'maxTokenCount',
+    'stopTokens',
+    'suggestionCount',
+    'temperature',
+  ],
   additionalProperties: false,
   properties: {
     contextLimit: {
       type: 'number',
-      default: 1500,
     },
     endpoint: {
       type: 'string',
     },
     maxTokenCount: {
       type: 'number',
-      default: 512,
     },
     stopTokens: {
       type: 'array',
       items: {
         type: 'string',
       },
-      default: [],
     },
     suggestionCount: {
       type: 'number',
-      default: 1,
     },
     temperature: {
       type: 'number',
-      default: 0.2,
     },
   },
 };
 
 const LinseerCompletionConfigSchema = {
   type: 'object',
-  required: [],
+  required: [
+    'contextLimit',
+    'maxTokenCount',
+    'stopTokens',
+    'subModelType',
+    'suggestionCount',
+    'temperature',
+  ],
   additionalProperties: false,
   properties: {
     contextLimit: {
       type: 'number',
-      default: 1500,
     },
     maxTokenCount: {
       type: 'number',
-      default: 512,
     },
     stopTokens: {
       type: 'array',
       items: {
         type: 'string',
       },
-      default: [],
     },
     subModelType: {
       type: 'string',
     },
     suggestionCount: {
       type: 'number',
-      default: 1,
     },
     temperature: {
       type: 'number',
-      default: 0.2,
     },
   },
 };

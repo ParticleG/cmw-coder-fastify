@@ -1,4 +1,4 @@
-apiType = "Linseer" #API style, could be "HuggingFace" or "Linseer"
+apiStyle = "Linseer" #API style, could be "HuggingFace" or "Linseer"
 statistics = "http://rdee.h3c.com/kong/RdTestResourceStatistic"
 #userId = "" #Uncomment to use custom userId instead of user directory name
 

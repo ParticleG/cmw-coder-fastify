@@ -5,39 +5,36 @@ import { JSONSyncPreset } from 'lowdb/node';
 import { join } from 'path';
 import { cwd } from 'process';
 
-import packageJson from 'app/package.json';
-import { ModelType } from 'types/common';
+import { HuggingFaceModelType, LinseerModelType } from 'types/common';
+import { Logger } from "types/Logger";
 import { authCode, judgment, login, refreshToken } from 'utils/axios/index.js';
 
 interface Database {
-  modelType?: ModelType;
+  modelType?: HuggingFaceModelType | LinseerModelType;
   tokens: {
     access: string;
     refresh: string;
   };
-  version: string;
+  version: number;
 }
 
-const defaultData = (): Database => ({
+const defaultData: Database = {
   tokens: {
     access: '',
     refresh: '',
   },
-  version: packageJson.version,
-});
+  version: 2,
+};
 
 class DatabaseManager {
   private _db: LowSync<Database>;
 
   constructor() {
-    this._db = JSONSyncPreset<Database>(
-      join(cwd(), 'data.lowdb'),
-      defaultData(),
-    );
-    const [currentMajor, currentMinor] = packageJson.version.split('.');
-    const [dbMajor, dbMinor] = this._db.data.version.split('.');
-    if (dbMajor !== currentMajor || dbMinor !== currentMinor) {
-      this._db.data = defaultData();
+    this._db = JSONSyncPreset<Database>(join(cwd(), 'data.lowdb'), defaultData);
+    if ((this._db.data.version ?? 1) < defaultData.version) {
+      Logger.warn("Database", "Database upgraded, reset modelType.");
+      this._db.data.version = defaultData.version;
+      delete this._db.data.modelType;
     }
     this._db.write();
   }
@@ -76,7 +73,7 @@ class DatabaseManager {
     return this._db.data.modelType;
   }
 
-  setModelType(modelType: ModelType) {
+  setModelType(modelType: HuggingFaceModelType | LinseerModelType) {
     this._db.data.modelType = modelType;
     this._db.write();
   }

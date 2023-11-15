@@ -30,7 +30,6 @@ export class Logger {
     this._log('plain', module, message);
   }
 
-  // noinspection JSUnusedGlobalSymbols
   static warn(module: string, message: any, reason?: any, hint?: any) {
     this._log('warning', module, message, reason, hint);
   }
