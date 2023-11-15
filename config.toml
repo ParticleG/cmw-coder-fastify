@@ -3,7 +3,7 @@ statistics = "http://10.113.36.121/kong/RdTestResourceStatistic"
 #userId = "" #Uncomment to use custom userId instead of windows user directory name
 
 [[modelConfigs]]
-modelType = "Comware-V1"
+modelType = "ComwareV1"
 
 [modelConfigs.completionConfigs.function]
 contextLimit = 1_500
@@ -35,7 +35,7 @@ middle = "<fim_middle>"
 start = "<fim_prefix>"
 
 [[modelConfigs]]
-modelType = "Comware-V2"
+modelType = "ComwareV2"
 
 [modelConfigs.completionConfigs.function]
 contextLimit = 1_500
