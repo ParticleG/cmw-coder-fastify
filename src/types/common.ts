@@ -3,11 +3,18 @@ export enum ApiStyle {
   Linseer = 'Linseer',
 }
 
-export type HuggingFaceModelType = 'Comware-V1' | 'Comware-V2';
+export enum HuggingFaceModelType {
+  ComwareV1 = 'ComwareV1',
+  ComwareV2 = 'ComwareV2',
+}
 
-export type LinseerModelType = 'Linseer' | 'Linseer-SR88Driver';
+export enum LinseerModelType {
+  Linseer = 'Linseer',
+  Linseer_SR88Driver = 'Linseer_SR88Driver',
+}
 
-export type SubModelType =
-  | 'linseer-code-13b'
-  | 'linseer-code-13b-sr88drv'
-  | 'linseer-code-34b';
+export enum SubModelType {
+  'linseer-code-13b',
+  'linseer-code-13b-sr88drv',
+  'linseer-code-34b',
+}

@@ -2,7 +2,12 @@ import { userInfo } from 'os';
 import { JSONSchemaType } from 'ajv';
 
 import { ConfigType } from 'components/Configurator/types';
-import { ApiStyle } from 'types/common';
+import {
+  ApiStyle,
+  HuggingFaceModelType,
+  LinseerModelType,
+  SubModelType,
+} from 'types/common';
 
 const HuggingFaceCompletionConfigSchema = {
   type: 'object',
@@ -66,6 +71,7 @@ const LinseerCompletionConfigSchema = {
     },
     subModelType: {
       type: 'string',
+      enum: Object.values(SubModelType),
     },
     suggestionCount: {
       type: 'number',
@@ -91,7 +97,7 @@ export const ConfigSchema: Partial<JSONSchemaType<ConfigType>> = {
         anyOf: [
           {
             type: 'object',
-            required: [],
+            required: ['completionConfigs', 'modelType', 'separateTokens'],
             additionalProperties: false,
             properties: {
               completionConfigs: {
@@ -106,6 +112,7 @@ export const ConfigSchema: Partial<JSONSchemaType<ConfigType>> = {
               },
               modelType: {
                 type: 'string',
+                enum: Object.keys(HuggingFaceModelType),
               },
               separateTokens: {
                 type: 'object',
@@ -126,7 +133,7 @@ export const ConfigSchema: Partial<JSONSchemaType<ConfigType>> = {
           },
           {
             type: 'object',
-            required: [],
+            required: ['completionConfigs', 'endpoint', 'modelType'],
             additionalProperties: false,
             properties: {
               completionConfigs: {
@@ -144,6 +151,7 @@ export const ConfigSchema: Partial<JSONSchemaType<ConfigType>> = {
               },
               modelType: {
                 type: 'string',
+                enum: Object.keys(LinseerModelType),
               },
             },
           },

@@ -8,12 +8,14 @@ import { HuggingFaceModelType, LinseerModelType } from 'types/common';
 let currentCursor: Range = new Range(0, 0, 0, 0);
 let lastCursor: Range = new Range(0, 0, 0, 0);
 
-const secondClassMap = new Map<HuggingFaceModelType | LinseerModelType, string>([
-  ["Comware-V1", "CMW"],
-  ["Comware-V2", "CODELLAMA"],
-  ["Linseer", "LS13B"],
-  ["Linseer-SR88Driver", "LS13B"],
-]);
+const secondClassMap = new Map<HuggingFaceModelType | LinseerModelType, string>(
+  [
+    [HuggingFaceModelType.ComwareV1, 'CMW'],
+    [HuggingFaceModelType.ComwareV2, 'CODELLAMA'],
+    [LinseerModelType.Linseer, 'LS13B'],
+    [LinseerModelType.Linseer_SR88Driver, 'LS13B'],
+  ],
+);
 
 const constructData = (
   completion: string,
@@ -79,7 +81,8 @@ export default fastifyPlugin(async (fastify) => {
             projectId,
             version,
             username,
-            databaseManager.getModelType() ?? fastify.config.modelConfigs[0].modelType,
+            databaseManager.getModelType() ??
+              fastify.config.modelConfigs[0].modelType,
             true,
           ),
         );
@@ -112,7 +115,8 @@ export default fastifyPlugin(async (fastify) => {
             projectId,
             version,
             username,
-            databaseManager.getModelType() ?? fastify.config.modelConfigs[0].modelType,
+            databaseManager.getModelType() ??
+              fastify.config.modelConfigs[0].modelType,
             false,
           ),
         );

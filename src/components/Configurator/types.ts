@@ -20,7 +20,7 @@ export interface HuggingFaceCompletionConfigType {
   temperature: number;
 }
 
-export interface HuggingFaceConfigType {
+export interface HuggingFaceModelConfigType {
   completionConfigs: {
     function: HuggingFaceCompletionConfigType;
     line: HuggingFaceCompletionConfigType;
@@ -39,7 +39,7 @@ export interface LinseerCompletionConfigType {
   temperature: number;
 }
 
-export interface LinseerConfigType {
+export interface LinseerModelConfigType {
   completionConfigs: {
     function: LinseerCompletionConfigType;
     line: LinseerCompletionConfigType;
@@ -52,7 +52,7 @@ export interface LinseerConfigType {
 export type ConfigType =
   | {
       apiStyle: ApiStyle.HuggingFace;
-      modelConfigs: HuggingFaceConfigType[];
+      modelConfigs: HuggingFaceModelConfigType[];
       server: {
         host: string;
         port: number;
@@ -62,7 +62,7 @@ export type ConfigType =
     }
   | {
       apiStyle: ApiStyle.Linseer;
-      modelConfigs: LinseerConfigType[];
+      modelConfigs: LinseerModelConfigType[];
       server: {
         host: string;
         port: number;

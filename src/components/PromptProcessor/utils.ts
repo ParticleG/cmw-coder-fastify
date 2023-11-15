@@ -3,8 +3,8 @@ import 'core-js/actual/array/at';
 import escapeStringRegexp from 'escape-string-regexp';
 
 import {
-  HuggingFaceConfigType,
-  LinseerConfigType,
+  HuggingFaceModelConfigType,
+  LinseerModelConfigType,
   SeparateTokens,
 } from 'components/Configurator/types';
 import { PromptComponents } from 'components/PromptExtractor/types';
@@ -37,7 +37,7 @@ export const getPromptString = (
 };
 
 export const processHuggingFaceApi = async (
-  modelConfig: HuggingFaceConfigType,
+  modelConfig: HuggingFaceModelConfigType,
   promptComponents: PromptComponents,
   isSnippet: boolean,
 ): Promise<string[]> => {
@@ -90,7 +90,7 @@ export const processHuggingFaceApi = async (
 };
 
 export const processLinseerApi = async (
-  modelConfig: LinseerConfigType,
+  modelConfig: LinseerModelConfigType,
   accessToken: string,
   promptComponents: PromptComponents,
   isSnippet: boolean,
