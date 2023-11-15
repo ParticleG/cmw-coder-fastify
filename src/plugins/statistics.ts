@@ -3,12 +3,12 @@ import fastifyPlugin from 'fastify-plugin';
 
 import { databaseManager } from 'components/DatabaseManager';
 import { Range } from 'types/vscode/range';
-import { ModelType } from 'types/common';
+import { HuggingFaceModelType, LinseerModelType } from 'types/common';
 
 let currentCursor: Range = new Range(0, 0, 0, 0);
 let lastCursor: Range = new Range(0, 0, 0, 0);
 
-const secondClassMap = new Map<ModelType, string>([
+const secondClassMap = new Map<HuggingFaceModelType | LinseerModelType, string>([
   ["Comware-V1", "CMW"],
   ["Comware-V2", "CODELLAMA"],
   ["Linseer", "LS13B"],
@@ -22,7 +22,7 @@ const constructData = (
   projectId: string,
   version: string,
   username: string,
-  modelType: ModelType,
+  modelType: HuggingFaceModelType | LinseerModelType,
   isAccept: boolean,
 ) => {
   const isSnippet = completion[0] === '1';

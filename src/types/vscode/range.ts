@@ -515,7 +515,7 @@ export class Range {
   }
 
   /**
-   * Create a new range using this range's start position, and using end. Line and end.character as the end position.
+   * Create a new range using this range's start position, and using end.Line and end.character as the end position.
    */
   public setEndPosition(line: number, character: number): Range {
     return new Range(this.start.line, this.start.character, line, character);

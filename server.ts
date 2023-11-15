@@ -4,9 +4,9 @@ import Fastify from 'fastify';
 import App from 'app/src/app';
 import { databaseManager } from 'components/DatabaseManager';
 import { SystemTray } from 'components/SystemTray';
-import Config from 'types/config';
+import { ApiStyle } from 'types/common';
+import Config from 'plugins/config';
 import { Logger, LogLevel } from 'types/Logger';
-import * as console from 'console';
 import { loginPrompt } from 'utils/script';
 
 const fastify = Fastify({
@@ -61,7 +61,7 @@ async function main() {
       ),
   );
 
-  if (fastify.config.authRequired) {
+  if (fastify.config.apiStyle == ApiStyle.Linseer) {
     if (!(await databaseManager.accessToken())) {
       await loginPrompt(fastify.config.userId);
     }
@@ -81,7 +81,7 @@ main().catch((errors) => {
       );
     });
   } else {
-    console.error(errors);
+    Logger.error('Config', errors);
   }
   fastify.close().then(
     () => Logger.success('Server', 'Successfully closed'),

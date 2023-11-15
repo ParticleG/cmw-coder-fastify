@@ -2,12 +2,12 @@ import SysTray, { ClickEvent, MenuItem } from 'systray2';
 
 import packageJson from 'app/package.json';
 import { ItemEventMap } from 'components/SystemTray/types';
-import { ModelType } from 'types/common';
+import { HuggingFaceModelType, LinseerModelType } from 'types/common';
 
 interface MenuItemClickable extends MenuItem {
   click?: () => Promise<void>;
   items?: MenuItemClickable[];
-  type?: ModelType;
+  type?: HuggingFaceModelType | LinseerModelType;
 }
 
 interface ClickableClickEvent extends ClickEvent {
@@ -17,7 +17,7 @@ interface ClickableClickEvent extends ClickEvent {
 const radioConfigs: {
   title: string;
   tooltip: string;
-  modelType: ModelType;
+  modelType: HuggingFaceModelType | LinseerModelType;
 }[] = [
   {
     title: 'CmwCoder 1.0',
@@ -42,14 +42,14 @@ const radioConfigs: {
 ];
 
 export class SystemTray {
-  private modelType: ModelType;
+  private modelType: HuggingFaceModelType | LinseerModelType;
   private systray: SysTray;
 
   private readonly modelItems: MenuItemClickable[];
 
   private _handlerMap = new Map<keyof ItemEventMap, any>();
 
-  constructor(modelType: ModelType, availableModels: ModelType[]) {
+  constructor(modelType: HuggingFaceModelType | LinseerModelType, availableModels: (HuggingFaceModelType | LinseerModelType)[]) {
     this.modelType = modelType;
     this.modelItems = radioConfigs
       .filter((radioConfig) => availableModels.includes(radioConfig.modelType))
@@ -108,7 +108,7 @@ export class SystemTray {
   private constructRadioItem(
     title: string,
     tooltip: string,
-    modelType: ModelType,
+    modelType: HuggingFaceModelType | LinseerModelType,
   ): MenuItemClickable {
     return {
       title,
@@ -120,7 +120,7 @@ export class SystemTray {
     };
   }
 
-  private async radioItemClick(modelType: ModelType) {
+  private async radioItemClick(modelType: HuggingFaceModelType | LinseerModelType) {
     this.modelType = modelType;
     await Promise.all(
       this.modelItems.map(async (item) => {

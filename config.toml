@@ -1,20 +1,33 @@
-apiType = "HuggingFace"
-authRequired = true
+apiStyle = "HuggingFace" #API style, could be "HuggingFace" or "Linseer"
 statistics = "http://10.113.36.121/kong/RdTestResourceStatistic"
-#userId = "" #Uncomment to use custom userId instead of user directory name
+#userId = "" #Uncomment to use custom userId instead of windows user directory name
 
 [[modelConfigs]]
+modelType = "Comware-V1"
+
+[modelConfigs.completionConfigs.function]
 contextLimit = 1_500
 endpoint = "http://10.113.36.104"
-modelType = "Comware-V1"
-stopTokens = [ "<fim_pad>", "<|endoftext|>", "\n}" ]
+maxTokenCount = 512
+stopTokens = ["<fim_pad>", "<|endoftext|>", "\n}"]
 suggestionCount = 1
 temperature = 0.2
 
-[modelConfigs.maxNewTokens]
-function = 512
-line = 48
-snippet = 128
+[modelConfigs.completionConfigs.line]
+contextLimit = 1_500
+endpoint = "http://10.113.36.104"
+maxTokenCount = 48
+stopTokens = ["<fim_pad>", "<|endoftext|>", "\n}"]
+suggestionCount = 1
+temperature = 0.2
+
+[modelConfigs.completionConfigs.snippet]
+contextLimit = 1_500
+endpoint = "http://10.113.36.104"
+maxTokenCount = 128
+stopTokens = ["<fim_pad>", "<|endoftext|>", "\n}"]
+suggestionCount = 1
+temperature = 0.2
 
 [modelConfigs.separateTokens]
 end = "<fim_suffix>"
@@ -22,17 +35,31 @@ middle = "<fim_middle>"
 start = "<fim_prefix>"
 
 [[modelConfigs]]
+modelType = "Comware-V2"
+
+[modelConfigs.completionConfigs.function]
 contextLimit = 1_500
 endpoint = "http://10.113.36.111"
-modelType = "Comware-V2"
-stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
+maxTokenCount = 512
+stopTokens = ["<fim_pad>", "<|endoftext|>", "</s>", "\n}"]
 suggestionCount = 1
 temperature = 0.2
 
-[modelConfigs.maxNewTokens]
-function = 512
-line = 48
-snippet = 128
+[modelConfigs.completionConfigs.line]
+contextLimit = 1_500
+endpoint = "http://10.113.36.111"
+maxTokenCount = 48
+stopTokens = ["<fim_pad>", "<|endoftext|>", "</s>", "\n}"]
+suggestionCount = 1
+temperature = 0.2
+
+[modelConfigs.completionConfigs.snippet]
+contextLimit = 1_500
+endpoint = "http://10.113.36.111"
+maxTokenCount = 128
+stopTokens = ["<fim_pad>", "<|endoftext|>", "</s>", "\n}"]
+suggestionCount = 1
+temperature = 0.2
 
 [modelConfigs.separateTokens]
 end = "_<SUF>"

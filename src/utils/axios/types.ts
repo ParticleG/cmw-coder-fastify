@@ -1,3 +1,5 @@
+import { SubModelType } from "types/common";
+
 export interface JudgmentData {
   code: number;
   data: number;
@@ -37,7 +39,7 @@ export interface GenerateRequestData {
 
 export interface GenerateRdRequestData {
   question: string;
-  model: 'linseer-code-13b' | 'linseer-code-34b' | 'linseer-code-13b-sr88drv';
+  model: SubModelType;
   maxTokens: number;
   temperature: number;
   stop: string[];
