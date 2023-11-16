@@ -1,5 +1,5 @@
 apiStyle = "HuggingFace" #API style, could be "HuggingFace" or "Linseer"
-statistics = "http://10.113.36.121/kong/RdTestResourceStatistic"
+statistics = "http://10.113.12.206/kong/RdTestResourceStatistic"
 #userId = "" #Uncomment to use custom userId instead of windows user directory name
 
 [[modelConfigs]]
