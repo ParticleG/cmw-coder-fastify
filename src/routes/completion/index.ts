@@ -19,17 +19,22 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     { schema: acceptSchema },
     async (request) => {
       const { completion, projectId, version } = request.body;
-      fastify.statistics.accept(
-        completion,
-        Date.now(),
-        Date.now(),
-        projectId,
-        version,
-        fastify.config.userId,
-      );
-      return {
-        result: 'success',
-      };
+      try {
+        fastify.statistics.accept(
+          completion,
+          Date.now(),
+          Date.now(),
+          projectId,
+          version,
+          fastify.config.userId,
+        );
+        return {
+          result: 'success',
+        };
+      } catch (e) {
+        Logger.warn('route.completion.accept', e);
+        return { result: 'error' };
+      }
     },
   );
 
@@ -38,17 +43,22 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     { schema: acceptSchema },
     async (request) => {
       const { completion, projectId, version } = request.body;
-      fastify.statistics.generate(
-        completion,
-        Date.now(),
-        Date.now(),
-        projectId,
-        version,
-        fastify.config.userId,
-      );
-      return {
-        result: 'success',
-      };
+      try {
+        fastify.statistics.generate(
+          completion,
+          Date.now(),
+          Date.now(),
+          projectId,
+          version,
+          fastify.config.userId,
+        );
+        return {
+          result: 'success',
+        };
+      } catch (e) {
+        Logger.warn('route.completion.accept', e);
+        return { result: 'error' };
+      }
     },
   );
 
