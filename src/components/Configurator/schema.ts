@@ -91,6 +91,10 @@ export const ConfigSchema: Partial<JSONSchemaType<ConfigType>> = {
       type: 'string',
       enum: Object.values(ApiStyle),
     },
+    configVersion: {
+      type: 'number',
+      const: 2,
+    },
     modelConfigs: {
       type: 'array',
       items: {

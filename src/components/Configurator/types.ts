@@ -49,24 +49,24 @@ export interface LinseerModelConfigType {
   modelType: LinseerModelType;
 }
 
-export type ConfigType =
-  | {
-      apiStyle: ApiStyle.HuggingFace;
-      modelConfigs: HuggingFaceModelConfigType[];
-      server: {
-        host: string;
-        port: number;
-      };
-      statistics: string;
-      userId: string;
-    }
-  | {
-      apiStyle: ApiStyle.Linseer;
-      modelConfigs: LinseerModelConfigType[];
-      server: {
-        host: string;
-        port: number;
-      };
-      statistics: string;
-      userId: string;
-    };
+interface CommonConfigType {
+  configVersion: 2;
+  server: {
+    host: string;
+    port: number;
+  };
+  statistics: string;
+  userId: string;
+}
+
+export interface HuggingFaceConfigType extends CommonConfigType {
+  apiStyle: ApiStyle.HuggingFace;
+  modelConfigs: HuggingFaceModelConfigType[];
+}
+
+export interface LinseerConfigType extends CommonConfigType {
+  apiStyle: ApiStyle.Linseer;
+  modelConfigs: LinseerModelConfigType[];
+}
+
+export type ConfigType = HuggingFaceConfigType | LinseerConfigType;
