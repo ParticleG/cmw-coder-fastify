@@ -1,5 +1,4 @@
 import { createHash } from 'crypto';
-import * as console from 'console';
 
 import { ConfigType } from 'components/Configurator/types';
 import { databaseManager } from 'components/DatabaseManager';
@@ -71,7 +70,7 @@ export class PromptProcessor {
         );
       }
     } catch (e) {
-      console.warn(e);
+      Logger.warn('PromptProcessor.process', e);
     }
     Logger.log(
       'PromptProcessor.process',

@@ -11,7 +11,6 @@ import {
 } from 'routes/completion/schema';
 import { parseEditorInfo } from 'routes/completion/utils';
 import { TextDocument } from 'types/TextDocument';
-import * as console from 'console';
 import { Logger } from 'types/Logger';
 
 export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
@@ -88,7 +87,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           ),
         };
       } catch (e) {
-        console.warn(e);
+        Logger.warn('route.completion.generate', e);
         return { result: 'error', message: (<Error>e).message };
       }
     },

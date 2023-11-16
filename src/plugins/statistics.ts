@@ -2,8 +2,9 @@ import axios from 'axios';
 import fastifyPlugin from 'fastify-plugin';
 
 import { databaseManager } from 'components/DatabaseManager';
-import { Range } from 'types/vscode/range';
 import { HuggingFaceModelType, LinseerModelType } from 'types/common';
+import { Range } from 'types/vscode/range';
+import { Logger } from "types/Logger";
 
 let currentCursor: Range = new Range(0, 0, 0, 0);
 let lastCursor: Range = new Range(0, 0, 0, 0);
@@ -87,7 +88,7 @@ export default fastifyPlugin(async (fastify) => {
           ),
         );
     } catch (e) {
-      console.error(e);
+      Logger.error("fastify.statistics.accept", e);
     }
   };
   fastify.statistics.generate = async (
@@ -121,7 +122,7 @@ export default fastifyPlugin(async (fastify) => {
           ),
         );
     } catch (e) {
-      console.error(e);
+      Logger.error("fastify.statistics.generate", e);
     }
   };
 
