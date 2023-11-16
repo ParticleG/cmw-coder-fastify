@@ -8,7 +8,7 @@ modelType = "ComwareV1"
 
 [modelConfigs.completionConfigs.function]
 contextLimit = 1_500
-endpoint = "http://10.113.36.104"
+endpoint = "http://10.113.36.111:8080"
 maxTokenCount = 512
 stopTokens = ["<fim_pad>", "<|endoftext|>", "\n}"]
 suggestionCount = 1
@@ -16,7 +16,7 @@ temperature = 0.2
 
 [modelConfigs.completionConfigs.line]
 contextLimit = 1_500
-endpoint = "http://10.113.36.104:81"
+endpoint = "http://10.113.36.111:8081"
 maxTokenCount = 48
 stopTokens = ["<fim_pad>", "<|endoftext|>", "\n}"]
 suggestionCount = 1
@@ -24,7 +24,7 @@ temperature = 0.2
 
 [modelConfigs.completionConfigs.snippet]
 contextLimit = 1_500
-endpoint = "http://10.113.36.104"
+endpoint = "http://10.113.36.111:8080"
 maxTokenCount = 128
 stopTokens = ["<fim_pad>", "<|endoftext|>", "\n}"]
 suggestionCount = 1
