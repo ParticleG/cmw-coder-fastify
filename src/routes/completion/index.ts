@@ -19,9 +19,10 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     { schema: acceptSchema },
     async (request) => {
       const { completion, projectId, version } = request.body;
+      const decodedCompletion = decode(Buffer.from(completion, 'base64'), 'gb2312');
       try {
         fastify.statistics.accept(
-          completion,
+          decodedCompletion,
           Date.now(),
           Date.now(),
           projectId,
@@ -43,9 +44,10 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     { schema: acceptSchema },
     async (request) => {
       const { completion, projectId, version } = request.body;
+      const decodedCompletion = decode(Buffer.from(completion, 'base64'), 'gb2312');
       try {
         fastify.statistics.generate(
-          completion,
+          decodedCompletion,
           Date.now(),
           Date.now(),
           projectId,
