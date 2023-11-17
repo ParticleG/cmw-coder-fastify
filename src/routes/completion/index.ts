@@ -1,7 +1,6 @@
 import { FastifyPluginAsync } from 'fastify';
 import { decode, encode } from 'iconv-lite';
 
-import { databaseManager } from 'components/DatabaseManager';
 import { PromptExtractor } from 'components/PromptExtractor';
 import { PromptProcessor } from 'components/PromptProcessor';
 import {
@@ -12,26 +11,56 @@ import {
 } from 'routes/completion/schema';
 import { parseEditorInfo } from 'routes/completion/utils';
 import { TextDocument } from 'types/TextDocument';
-import * as console from 'console';
+import { Logger } from 'types/Logger';
 
 export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
   fastify.post<acceptType>(
     '/accept',
     { schema: acceptSchema },
     async (request) => {
-      const startTime = Date.now();
       const { completion, projectId, version } = request.body;
-      fastify.statistics.accept(
-        completion,
-        startTime,
-        Date.now(),
-        projectId,
-        version,
-        fastify.config.userId,
-      );
-      return {
-        result: 'success',
-      };
+      const decodedCompletion = decode(Buffer.from(completion, 'base64'), 'gb2312');
+      try {
+        fastify.statistics.accept(
+          decodedCompletion,
+          Date.now(),
+          Date.now(),
+          projectId,
+          version,
+          fastify.config.userId,
+        );
+        return {
+          result: 'success',
+        };
+      } catch (e) {
+        Logger.warn('route.completion.accept', e);
+        return { result: 'error' };
+      }
+    },
+  );
+
+  fastify.post<acceptType>(
+    '/insert',
+    { schema: acceptSchema },
+    async (request) => {
+      const { completion, projectId, version } = request.body;
+      const decodedCompletion = decode(Buffer.from(completion, 'base64'), 'gb2312');
+      try {
+        fastify.statistics.generate(
+          decodedCompletion,
+          Date.now(),
+          Date.now(),
+          projectId,
+          version,
+          fastify.config.userId,
+        );
+        return {
+          result: 'success',
+        };
+      } catch (e) {
+        Logger.warn('route.completion.accept', e);
+        return { result: 'error' };
+      }
     },
   );
 
@@ -39,10 +68,11 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     '/generate',
     { schema: generateSchema },
     async (request) => {
-      const startTime = Date.now();
-      const { info, projectId, version } = request.body;
+      const { info, projectId } = request.body;
       const decodedInfo = decode(Buffer.from(info, 'base64'), 'gb2312');
-      // console.log(decodedInfo);
+
+      Logger.hint('route.completion', JSON.stringify({ decodedInfo }, null, 2));
+
       try {
         const {
           currentFilePath,
@@ -56,34 +86,20 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
         const prompt = await new PromptExtractor(
           new TextDocument(currentFilePath),
           cursorRange.start,
-        ).getPromptComp(openedTabs, symbols, prefix, suffix);
+        ).getPromptComponents(openedTabs, symbols, prefix, suffix);
         const results = await new PromptProcessor(fastify.config).process(
           prompt,
           prefix,
           projectId,
         );
-        if (results.length && results[0].length) {
-          fastify.statistics
-            .generate(
-              results[0],
-              startTime,
-              Date.now(),
-              projectId,
-              version,
-              fastify.config.userId,
-            )
-            .catch();
-        }
         return {
           result: 'success',
           contents: results.map((result) =>
             encode(result, 'gb2312').toString('base64'),
           ),
-          modelType:
-            databaseManager.getModelType() ?? fastify.config.availableModels[0],
         };
       } catch (e) {
-        console.warn(e);
+        Logger.warn('route.completion.generate', e);
         return { result: 'error', message: (<Error>e).message };
       }
     },

@@ -183,7 +183,7 @@ export class Range {
   }
 
   /**
-   * A intersection of the two ranges.
+   * An intersection of the two ranges.
    */
   public static intersectRanges(a: IRange, b: IRange): Range | null {
     let resultStartLineNumber = a.start.line;
@@ -348,7 +348,7 @@ export class Range {
   }
 
   /**
-   * Test if the two ranges are intersecting. If the ranges are touching it returns true.
+   * Test if the two ranges are intersecting. If the ranges are touching, it returns true.
    */
   public static areIntersecting(a: IRange, b: IRange): boolean {
     // Check if `a` is before `b`
@@ -470,7 +470,7 @@ export class Range {
   }
 
   /**
-   * A intersection of the two ranges.
+   * An intersection of the two ranges.
    */
   public intersectRanges(range: IRange): Range | null {
     return Range.intersectRanges(this, range);
@@ -498,7 +498,7 @@ export class Range {
   }
 
   /**
-   * Transform to a user presentable string representation.
+   * Transform to a user-presentable string representation.
    */
   public toString(): string {
     return (
@@ -515,14 +515,14 @@ export class Range {
   }
 
   /**
-   * Create a new range using this range's start position, and using end.line and end.character as the end position.
+   * Create a new range using this range's start position, and using end.Line and end.character as the end position.
    */
   public setEndPosition(line: number, character: number): Range {
     return new Range(this.start.line, this.start.character, line, character);
   }
 
   /**
-   * Create a new range using this range's end position, and using start.line and start.character as the start position.
+   * Create a new range using this range's end position, and using start. Line and start.character as the start position.
    */
   public setStartPosition(line: number, character: number): Range {
     return new Range(line, character, this.end.line, this.end.character);
@@ -543,7 +543,7 @@ export class Range {
   }
 
   /**
-   * Moves the range by the given amount of lines.
+   * Moves the range by the given number of lines.
    */
   public delta(lineCount: number): Range {
     return new Range(

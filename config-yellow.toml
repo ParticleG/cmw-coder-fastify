@@ -1,33 +1,64 @@
-authRequired = true
-availableModels = [ "LS13B" ]
-#Uncomment to use custom userId instead of user directory name
-#userId = ""
+apiStyle = "Linseer" #API style, could be "HuggingFace" or "Linseer"
+configVersion = 2 #Configuration version, don't change this
+statistics = "http://rdee.h3c.com/kong/RdTestResourceStatistic"
+#userId = "" #Uncomment to use custom userId instead of user directory name
 
-[[endpoints]]
-endpoint = "http://rdtest.h3c.com/kong/RdTestAiService/chatgpt"
-model = "LS13B"
+[[modelConfigs]]
+endpoint = "http://rdee.h3c.com/kong/RdTestAiService/chatgpt"
+modelType = "Linseer"
 
-[promptExtractor]
+[modelConfigs.completionConfigs.function]
 contextLimit = 1_500
-
-[promptProcessor]
+maxTokenCount = 512
 stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
+subModelType = "linseer-code-34b"
 suggestionCount = 1
 temperature = 0.2
 
-  [promptProcessor.maxNewTokens]
-  line = 48
-  snippet = 128
+[modelConfigs.completionConfigs.line]
+contextLimit = 1_500
+maxTokenCount = 48
+stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
+subModelType = "linseer-code-13b"
+suggestionCount = 1
+temperature = 0.2
 
-  [[promptProcessor.separateTokens]]
-  model = "LS13B"
-  end = ""
-  middle = ""
-  start = ""
+[modelConfigs.completionConfigs.snippet]
+contextLimit = 1_500
+maxTokenCount = 128
+stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
+subModelType = "linseer-code-34b"
+suggestionCount = 1
+temperature = 0.2
+
+[[modelConfigs]]
+endpoint = "http://rdee.h3c.com/kong/RdTestAiService/chatgpt"
+modelType = "Linseer_SR88Driver"
+
+[modelConfigs.completionConfigs.function]
+contextLimit = 1_500
+maxTokenCount = 512
+stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
+subModelType = "linseer-code-34b"
+suggestionCount = 1
+temperature = 0.2
+
+[modelConfigs.completionConfigs.line]
+contextLimit = 1_500
+maxTokenCount = 48
+stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
+subModelType = "linseer-code-13b-sr88drv"
+suggestionCount = 1
+temperature = 0.2
+
+[modelConfigs.completionConfigs.snippet]
+contextLimit = 1_500
+maxTokenCount = 128
+stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
+subModelType = "linseer-code-34b"
+suggestionCount = 1
+temperature = 0.2
 
 [server]
 host = "localhost"
 port = 3000
-
-[statistics]
-endpoint = "http://rdtest.h3c.com/kong/RdTestResourceStatistic"

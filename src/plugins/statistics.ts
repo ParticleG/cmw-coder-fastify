@@ -2,11 +2,21 @@ import axios from 'axios';
 import fastifyPlugin from 'fastify-plugin';
 
 import { databaseManager } from 'components/DatabaseManager';
+import { HuggingFaceModelType, LinseerModelType } from 'types/common';
 import { Range } from 'types/vscode/range';
-import { ModelType } from 'types/common';
+import { Logger } from "types/Logger";
 
 let currentCursor: Range = new Range(0, 0, 0, 0);
 let lastCursor: Range = new Range(0, 0, 0, 0);
+
+const secondClassMap = new Map<HuggingFaceModelType | LinseerModelType, string>(
+  [
+    [HuggingFaceModelType.ComwareV1, 'CMW'],
+    [HuggingFaceModelType.ComwareV2, 'CODELLAMA'],
+    [LinseerModelType.Linseer, 'LS13B'],
+    [LinseerModelType.Linseer_SR88Driver, 'LS13B'],
+  ],
+);
 
 const constructData = (
   completion: string,
@@ -15,7 +25,7 @@ const constructData = (
   projectId: string,
   version: string,
   username: string,
-  modelType: ModelType,
+  modelType: HuggingFaceModelType | LinseerModelType,
   isAccept: boolean,
 ) => {
   const isSnippet = completion[0] === '1';
@@ -25,7 +35,7 @@ const constructData = (
     end: Math.floor(endTime / 1000),
     extra: version,
     product: 'SI',
-    secondClass: modelType,
+    secondClass: secondClassMap.get(modelType),
     subType: projectId,
     type: 'AIGC',
     user: username,
@@ -61,7 +71,7 @@ export default fastifyPlugin(async (fastify) => {
     try {
       await axios
         .create({
-          baseURL: fastify.config.statistics.endpoint,
+          baseURL: fastify.config.statistics,
         })
         .post(
           '/report/summary',
@@ -72,12 +82,13 @@ export default fastifyPlugin(async (fastify) => {
             projectId,
             version,
             username,
-            databaseManager.getModelType() ?? fastify.config.availableModels[0],
+            databaseManager.getModelType() ??
+              fastify.config.modelConfigs[0].modelType,
             true,
           ),
         );
     } catch (e) {
-      console.error(e);
+      Logger.error("fastify.statistics.accept", e);
     }
   };
   fastify.statistics.generate = async (
@@ -94,7 +105,7 @@ export default fastifyPlugin(async (fastify) => {
     try {
       await axios
         .create({
-          baseURL: fastify.config.statistics.endpoint,
+          baseURL: fastify.config.statistics,
         })
         .post(
           '/report/summary',
@@ -105,12 +116,13 @@ export default fastifyPlugin(async (fastify) => {
             projectId,
             version,
             username,
-            databaseManager.getModelType() ?? fastify.config.availableModels[0],
+            databaseManager.getModelType() ??
+              fastify.config.modelConfigs[0].modelType,
             false,
           ),
         );
     } catch (e) {
-      console.error(e);
+      Logger.error("fastify.statistics.generate", e);
     }
   };
 

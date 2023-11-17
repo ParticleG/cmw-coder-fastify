@@ -22,7 +22,6 @@ export class Logger {
     this._log('info', module, message);
   }
 
-  // noinspection JSUnusedGlobalSymbols
   static hint(module: string, message: any) {
     this._log('verbose', module, message);
   }

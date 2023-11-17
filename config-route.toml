@@ -1,0 +1,40 @@
+apiStyle = "HuggingFace" #API style, could be "HuggingFace" or "Linseer"
+configVersion = 2 #Configuration version, don't change this
+statistics = "http://10.113.12.206/kong/RdTestResourceStatistic"
+#userId = "" #Uncomment to use custom userId instead of windows user directory name
+
+[[modelConfigs]]
+modelType = "ComwareV1"
+
+[modelConfigs.completionConfigs.function]
+contextLimit = 1_500
+endpoint = "http://10.113.12.206:9190"
+maxTokenCount = 512
+stopTokens = ["<fim_pad>", "<|endoftext|>", "\n}"]
+suggestionCount = 1
+temperature = 0.2
+
+[modelConfigs.completionConfigs.line]
+contextLimit = 1_500
+endpoint = "http://10.113.12.206:9190"
+maxTokenCount = 48
+stopTokens = ["<fim_pad>", "<|endoftext|>", "\n}"]
+suggestionCount = 1
+temperature = 0.2
+
+[modelConfigs.completionConfigs.snippet]
+contextLimit = 1_500
+endpoint = "http://10.113.12.206:9190"
+maxTokenCount = 128
+stopTokens = ["<fim_pad>", "<|endoftext|>", "\n}"]
+suggestionCount = 1
+temperature = 0.2
+
+[modelConfigs.separateTokens]
+end = "<fim_suffix>"
+middle = "<fim_middle>"
+start = "<fim_prefix>"
+
+[server]
+host = "localhost"
+port = 3_000

@@ -25,6 +25,7 @@ import {
 import { SymbolInfo } from 'types/SymbolInfo';
 import { TextDocument } from 'types/TextDocument';
 import { Position } from 'types/vscode/position';
+import { Logger } from 'types/Logger';
 
 const { readFile } = promises;
 
@@ -42,7 +43,7 @@ export class PromptExtractor {
     this._position = position;
   }
 
-  async getPromptComp(
+  async getPromptComponents(
     openedTabs: string[],
     symbols: SymbolInfo[],
     beforeCursor: string,
@@ -78,7 +79,12 @@ export class PromptExtractor {
         (mostSimilarSnippet) =>
           mostSimilarSnippet.score > this._similarSnippetConfig.minScore,
       );
-    // console.log(mostSimilarSnippets);
+
+    Logger.hint(
+      'PromptExtractor.getPromptComponents',
+      JSON.stringify({ mostSimilarSnippets }, null, 2),
+    );
+
     if (mostSimilarSnippets.length) {
       prefixElements.push({
         type: PromptType.SimilarFile,
@@ -128,14 +134,17 @@ export class PromptExtractor {
       });
     }
 
-    // console.log(relativeDefinitions);
+    Logger.hint(
+      'PromptExtractor.getPromptComponents',
+      JSON.stringify({ relativeDefinitions }, null, 2),
+    );
 
     result.prefix = prefixElements
       .sort((first, second) => first.priority - second.priority)
       .map((prefixElement) => prefixElement.value)
       .join('\n\n');
 
-    // console.log(prefixElements);
+    Logger.hint('PromptExtractor.getPromptComponents', JSON.stringify({ prefixElements }, null, 2));
     return result;
   }
 

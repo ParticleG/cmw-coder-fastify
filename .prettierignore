@@ -30,5 +30,4 @@ appveyor.yml
 # Ignore other files:
 *.swp
 *.bak
-*.patch
 *.orig
