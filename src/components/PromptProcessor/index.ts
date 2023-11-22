@@ -5,7 +5,7 @@ import { databaseManager } from 'components/DatabaseManager';
 import { PromptComponents } from 'components/PromptExtractor/types';
 import { LRUCache } from 'components/PromptProcessor/types';
 import {
-  checkMultiLine,
+  checkIsSnippet,
   processHuggingFaceApi,
   processLinseerApi,
 } from 'components/PromptProcessor/utils';
@@ -38,7 +38,7 @@ export class PromptProcessor {
       return promptCached;
     }
 
-    const isSnippet = checkMultiLine(prefix);
+    const isSnippet = checkIsSnippet(prefix);
     let processedSuggestions: string[] = [];
 
     try {

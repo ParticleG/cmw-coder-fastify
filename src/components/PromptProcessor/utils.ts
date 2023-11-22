@@ -13,8 +13,9 @@ import { generate, generateRd } from 'utils/axios';
 // Start with '//' or '#', or end with '{' or '*/'
 const detectRegex = /^(\/\/|#)|(\{|\*\/)$/;
 
-export const checkMultiLine = (prefix: string): boolean => {
-  return detectRegex.test(prefix.trimEnd().split('\n').at(-1) ?? '');
+export const checkIsSnippet = (prefix: string): boolean => {
+  const lastLine = prefix.trimEnd().split('\n').at(-1) ?? '';
+  return detectRegex.test(lastLine) && (lastLine == lastLine.trimStart());
 };
 
 export const getPromptString = (
