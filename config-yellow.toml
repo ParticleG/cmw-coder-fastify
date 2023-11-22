@@ -9,7 +9,7 @@ modelType = "Linseer"
 
 [modelConfigs.completionConfigs.function]
 contextLimit = 1_500
-maxTokenCount = 512
+maxTokenCount = 256
 stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
 subModelType = "linseer-code-34b"
 suggestionCount = 1
@@ -37,7 +37,7 @@ modelType = "Linseer_SR88Driver"
 
 [modelConfigs.completionConfigs.function]
 contextLimit = 1_500
-maxTokenCount = 512
+maxTokenCount = 256
 stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
 subModelType = "linseer-code-34b"
 suggestionCount = 1

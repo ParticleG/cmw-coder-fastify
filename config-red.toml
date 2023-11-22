@@ -9,7 +9,7 @@ modelType = "ComwareV1"
 [modelConfigs.completionConfigs.function]
 contextLimit = 1_500
 endpoint = "http://10.113.36.104"
-maxTokenCount = 512
+maxTokenCount = 256
 stopTokens = ["<fim_pad>", "<|endoftext|>", "\n}"]
 suggestionCount = 1
 temperature = 0.2
@@ -41,7 +41,7 @@ modelType = "ComwareV2"
 [modelConfigs.completionConfigs.function]
 contextLimit = 1_500
 endpoint = "http://10.113.36.111"
-maxTokenCount = 512
+maxTokenCount = 256
 stopTokens = ["<fim_pad>", "<|endoftext|>", "</s>", "\n}"]
 suggestionCount = 1
 temperature = 0.2
