@@ -68,6 +68,9 @@ export default fastifyPlugin(async (fastify) => {
     version: string,
     username: string,
   ) => {
+    if (currentCursor.end.line == lastCursor.end.line) {
+      return;
+    }
     try {
       await axios
         .create({
