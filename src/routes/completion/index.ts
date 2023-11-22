@@ -9,7 +9,11 @@ import {
   generateSchema,
   generateType,
 } from 'routes/completion/schema';
-import { parseEditorInfo } from 'routes/completion/utils';
+import {
+  parseCursorString,
+  parseSymbolString,
+  parseTabString,
+} from 'routes/completion/utils';
 import { TextDocument } from 'types/TextDocument';
 import { Logger } from 'types/Logger';
 
@@ -19,7 +23,10 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     { schema: acceptSchema },
     async (request) => {
       const { completion, projectId, version } = request.body;
-      const decodedCompletion = decode(Buffer.from(completion, 'base64'), 'gb2312');
+      const decodedCompletion = decode(
+        Buffer.from(completion, 'base64'),
+        'gb2312',
+      );
       try {
         fastify.statistics.accept(
           decodedCompletion,
@@ -44,7 +51,10 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     { schema: acceptSchema },
     async (request) => {
       const { completion, projectId, version } = request.body;
-      const decodedCompletion = decode(Buffer.from(completion, 'base64'), 'gb2312');
+      const decodedCompletion = decode(
+        Buffer.from(completion, 'base64'),
+        'gb2312',
+      );
       try {
         fastify.statistics.generate(
           decodedCompletion,
@@ -68,28 +78,59 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     '/generate',
     { schema: generateSchema },
     async (request) => {
-      const { info, projectId } = request.body;
-      const decodedInfo = decode(Buffer.from(info, 'base64'), 'gb2312');
+      const {
+        cursorString,
+        path,
+        prefix,
+        projectId,
+        suffix,
+        symbolString,
+        tabString,
+        version,
+      } = request.body;
+      const decodedPath = decode(Buffer.from(path, 'base64'), 'gb2312');
+      const decodedPrefix = decode(Buffer.from(prefix, 'base64'), 'gb2312');
+      const decodedSuffix = decode(Buffer.from(suffix, 'base64'), 'gb2312');
+      const decodedSymbolString = decode(
+        Buffer.from(symbolString, 'base64'),
+        'gb2312',
+      );
+      const decodedTabString = decode(
+        Buffer.from(tabString, 'base64'),
+        'gb2312',
+      );
 
-      Logger.hint('route.completion', JSON.stringify({ decodedInfo }, null, 2));
+      Logger.hint(
+        'route.completion',
+        JSON.stringify(
+          {
+            cursor: cursorString,
+            path: decodedPath,
+            prefix: decodedPrefix,
+            projectId,
+            suffix: decodedSuffix,
+            symbolString: decodedSymbolString,
+            tabString: decodedTabString,
+            version,
+          },
+          null,
+          2,
+        ),
+      );
+
+      const cursorRange = parseCursorString(cursorString);
+      const symbols = parseSymbolString(decodedSymbolString);
+      const tabs = parseTabString(decodedTabString);
 
       try {
-        const {
-          currentFilePath,
-          cursorRange,
-          openedTabs,
-          symbols,
-          prefix,
-          suffix,
-        } = parseEditorInfo(decodedInfo);
         fastify.statistics.updateCursor(cursorRange);
         const prompt = await new PromptExtractor(
-          new TextDocument(currentFilePath),
+          new TextDocument(decodedPath),
           cursorRange.start,
-        ).getPromptComponents(openedTabs, symbols, prefix, suffix);
+        ).getPromptComponents(tabs, symbols, decodedPrefix, decodedSuffix);
         const results = await new PromptProcessor(fastify.config).process(
           prompt,
-          prefix,
+          decodedPrefix,
           projectId,
         );
         return {

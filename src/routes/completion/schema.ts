@@ -106,12 +106,36 @@ export interface acceptType {
 export const generateSchema = {
   body: {
     type: 'object',
-    required: ['info', 'projectId', 'version'],
+    required: [
+      'cursorString',
+      'path',
+      'prefix',
+      'projectId',
+      'suffix',
+      'symbolString',
+      'tabString',
+      'version',
+    ],
     properties: {
-      info: {
+      cursorString: {
+        type: 'string',
+      },
+      path: {
+        type: 'string',
+      },
+      prefix: {
         type: 'string',
       },
       projectId: {
+        type: 'string',
+      },
+      suffix: {
+        type: 'string',
+      },
+      symbolString: {
+        type: 'string',
+      },
+      tabString: {
         type: 'string',
       },
       version: {
@@ -123,8 +147,13 @@ export const generateSchema = {
 
 export interface generateType {
   Body: {
-    info: string;
+    cursorString: string;
+    path: string;
+    prefix: string;
     projectId: string;
+    suffix: string;
+    symbolString: string;
+    tabString: string;
     version: string;
   };
 }

@@ -9,7 +9,7 @@ import { ConfigType } from "components/Configurator/types";
 
 export default fastifyPlugin(async (fastify) => {
   const config = parse(
-    readFileSync(resolve(join(cwd(), 'config.toml'))).toString(),
+    readFileSync(resolve(join(cwd(), 'config-green.toml'))).toString(),
   );
   fastify.config = configurator.validate(config);
 });
