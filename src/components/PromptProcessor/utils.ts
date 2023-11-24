@@ -15,7 +15,7 @@ const detectRegex = /^(\/\/|#)|(\{|\*\/)$/;
 
 export const checkIsSnippet = (prefix: string): boolean => {
   const lastLine = prefix.trimEnd().split('\n').at(-1) ?? '';
-  return detectRegex.test(lastLine) && (lastLine == lastLine.trimStart());
+  return detectRegex.test(lastLine) && lastLine == lastLine.trimStart();
 };
 
 export const getPromptString = (
@@ -142,33 +142,45 @@ const _processGeneratedSuggestions = (
   isSnippet: boolean,
 ): string[] => {
   // TODO: Replace Date Created if needed.
-  return generatedSuggestions
-    .map((generatedSuggestion) =>
-      generatedSuggestion.substring(0, promptString.length) === promptString
-        ? generatedSuggestion.substring(promptString.length)
-        : generatedSuggestion,
-    )
-    .map((generatedSuggestion) => {
-      const combinedTokens = [...stopTokens];
-      if (separateTokens) {
-        const { start, end, middle } = separateTokens;
-        combinedTokens.push(start, end, middle);
-      }
-      const regExp = `(${combinedTokens
-        .map((token) => escapeStringRegexp(token))
-        .join('|')})`;
-      return generatedSuggestion.replace(new RegExp(regExp, 'g'), '');
-    })
-    .filter((generatedSuggestion) => generatedSuggestion.length > 0)
-    .map((generatedSuggestion) =>
-      isSnippet ? generatedSuggestion : generatedSuggestion.trimStart(),
-    )
-    .map((generatedSuggestion) =>
-      generatedSuggestion.replace(/\r\n|\n/g, '\\r\\n'),
-    )
-    .map((generatedSuggestion) =>
-      isSnippet
-        ? '1' + generatedSuggestion
-        : '0' + generatedSuggestion.split('\\r\\n')[0].trimEnd(),
-    );
+  return (
+    generatedSuggestions
+      /// Filter out contents that are the same as the prompt.
+      .map((generatedSuggestion) =>
+        generatedSuggestion.substring(0, promptString.length) === promptString
+          ? generatedSuggestion.substring(promptString.length)
+          : generatedSuggestion,
+      )
+      /// Filter out contents that are the same as the stop tokens.
+      .map((generatedSuggestion) => {
+        const combinedTokens = [...stopTokens];
+        if (separateTokens) {
+          const { start, end, middle } = separateTokens;
+          combinedTokens.push(start, end, middle);
+        }
+        const regExp = `(${combinedTokens
+          .map((token) => escapeStringRegexp(token))
+          .join('|')})`;
+        return generatedSuggestion.replace(new RegExp(regExp, 'g'), '');
+      })
+      /// Filter out leading empty lines.
+      .map((generatedSuggestion) => {
+        const lines = generatedSuggestion.split('\n');
+        const firstNonEmptyLineIndex = lines.findIndex(
+          (line) => line.trim().length > 0,
+        );
+        return lines.slice(firstNonEmptyLineIndex).join('\n');
+      })
+      /// Filter out empty suggestions.
+      .filter((generatedSuggestion) => generatedSuggestion.length > 0)
+      /// Replace line breaks with '\\r\\n'.
+      .map((generatedSuggestion) =>
+        generatedSuggestion.replace(/\r\n|\n/g, '\\r\\n'),
+      )
+      /// Construct the final suggestions.
+      .map((generatedSuggestion) =>
+        isSnippet
+          ? '1' + generatedSuggestion
+          : '0' + generatedSuggestion.split('\\r\\n')[0].trimEnd(),
+      )
+  );
 };
