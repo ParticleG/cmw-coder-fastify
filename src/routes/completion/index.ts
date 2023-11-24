@@ -18,6 +18,7 @@ import { TextDocument } from 'types/TextDocument';
 import { Logger } from 'types/Logger';
 
 export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
+  const promptProcessor = new PromptProcessor(fastify.config);
   fastify.post<acceptType>(
     '/accept',
     { schema: acceptSchema },
@@ -128,7 +129,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           new TextDocument(decodedPath),
           cursorRange.start,
         ).getPromptComponents(tabs, symbols, decodedPrefix, decodedSuffix);
-        const results = await new PromptProcessor(fastify.config).process(
+        const results = await promptProcessor.process(
           prompt,
           decodedPrefix,
           projectId,

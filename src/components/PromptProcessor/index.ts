@@ -27,7 +27,7 @@ export class PromptProcessor {
     projectId: string,
   ): Promise<string[]> {
     const cacheKey = createHash('sha1')
-      .update(promptComponents.prefix)
+      .update(prefix.trimEnd())
       .digest('base64');
     const promptCached = this._cache.get(cacheKey);
     if (promptCached) {
