@@ -32,7 +32,7 @@ export class PromptProcessor {
     const promptCached = this._cache.get(cacheKey);
     if (promptCached) {
       Logger.log(
-        'PromptProcessor.process',
+        'PromptProcessor.process.cached',
         JSON.stringify({ promptCached }, null, 2),
       );
       return promptCached;
@@ -70,10 +70,10 @@ export class PromptProcessor {
         );
       }
     } catch (e) {
-      Logger.warn('PromptProcessor.process', e);
+      Logger.warn('PromptProcessor.process.error', e);
     }
     Logger.log(
-      'PromptProcessor.process',
+      'PromptProcessor.process.normal',
       JSON.stringify({ processedSuggestions }, null, 2),
     );
     if (processedSuggestions.length) {
