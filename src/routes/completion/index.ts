@@ -24,6 +24,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     { schema: acceptSchema },
     async (request) => {
       const { completion, projectId, version } = request.body;
+      const projectIdLimit = projectId.slice(0, 30);
       const decodedCompletion = decode(
         Buffer.from(completion, 'base64'),
         'gb2312',
@@ -33,7 +34,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           decodedCompletion,
           Date.now(),
           Date.now(),
-          projectId,
+          projectIdLimit,
           version,
           fastify.config.userId,
         );
@@ -52,6 +53,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
     { schema: acceptSchema },
     async (request) => {
       const { completion, projectId, version } = request.body;
+      const projectIdLimit = projectId.slice(0, 30);
       const decodedCompletion = decode(
         Buffer.from(completion, 'base64'),
         'gb2312',
@@ -61,7 +63,7 @@ export default <FastifyPluginAsync>(async (fastify): Promise<void> => {
           decodedCompletion,
           Date.now(),
           Date.now(),
-          projectId,
+          projectIdLimit,
           version,
           fastify.config.userId,
         );
