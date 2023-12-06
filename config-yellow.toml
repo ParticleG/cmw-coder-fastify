@@ -59,6 +59,34 @@ subModelType = "linseer-code-34b"
 suggestionCount = 1
 temperature = 0.2
 
+[[modelConfigs]]
+endpoint = "http://rdee.h3c.com/kong/RdTestAiService/chatgpt"
+modelType = "Linseer_CClsw"
+
+[modelConfigs.completionConfigs.function]
+contextLimit = 1_500
+maxTokenCount = 256
+stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
+subModelType = "linseer-code-13b-cclsw"
+suggestionCount = 1
+temperature = 0.2
+
+[modelConfigs.completionConfigs.line]
+contextLimit = 1_500
+maxTokenCount = 48
+stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
+subModelType = "linseer-code-13b-cclsw"
+suggestionCount = 1
+temperature = 0.2
+
+[modelConfigs.completionConfigs.snippet]
+contextLimit = 1_500
+maxTokenCount = 128
+stopTokens = [ "<fim_pad>", "<|endoftext|>", "</s>", "\n}" ]
+subModelType = "linseer-code-13b-cclsw"
+suggestionCount = 1
+temperature = 0.2
+
 [server]
 host = "localhost"
 port = 3000

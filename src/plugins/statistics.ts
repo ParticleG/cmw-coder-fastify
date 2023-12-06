@@ -15,6 +15,7 @@ const secondClassMap = new Map<HuggingFaceModelType | LinseerModelType, string>(
     [HuggingFaceModelType.ComwareV2, 'CODELLAMA'],
     [LinseerModelType.Linseer, 'LS13B'],
     [LinseerModelType.Linseer_SR88Driver, 'LS13B'],
+    [LinseerModelType.Linseer_CClsw, 'LS13B'],
   ],
 );
 

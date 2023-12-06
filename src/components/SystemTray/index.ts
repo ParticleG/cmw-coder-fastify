@@ -39,6 +39,11 @@ const radioConfigs: {
     tooltip: 'Linseer 13B 模型 For SR88Driver',
     modelType: LinseerModelType.Linseer_SR88Driver,
   },
+  {
+    title: '百业灵犀-园区核心',
+    tooltip: 'Linseer 13B 模型 For CClsw',
+    modelType: LinseerModelType.Linseer_CClsw,
+  }
 ];
 
 export class SystemTray {
