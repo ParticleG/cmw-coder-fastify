@@ -49,8 +49,8 @@ const constructData = (
     user: username,
     userType: 'USER',
   };
-  if (modelType as LinseerModelType) {
-    Object.assign(basicData, {productline: productLineMap.get(modelType)})
+  if (modelType in LinseerModelType) {
+    Object.assign(basicData, {productLine: productLineMap.get(modelType as LinseerModelType)})
   }
 
   return [
@@ -113,9 +113,7 @@ export default fastifyPlugin(async (fastify) => {
     version: string,
     username: string,
   ) => {
-    if (currentCursor.end.line == lastCursor.end.line) {
-      return;
-    }
+    lastCursor = new Range(0, 0, 0, 0);
     try {
       await axios
         .create({
@@ -144,6 +142,7 @@ export default fastifyPlugin(async (fastify) => {
     lastCursor = currentCursor;
     currentCursor = cursor;
   };
+  
 });
 
 declare module 'fastify' {
