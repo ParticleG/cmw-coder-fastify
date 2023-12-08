@@ -48,10 +48,8 @@ const constructData = (
     type: 'AIGC',
     user: username,
     userType: 'USER',
+    productLine: modelType in LinseerModelType ? productLineMap.get(modelType as LinseerModelType) : ""
   };
-  if (modelType in LinseerModelType) {
-    Object.assign(basicData, {productLine: productLineMap.get(modelType as LinseerModelType)})
-  }
 
   return [
     {
@@ -113,7 +111,9 @@ export default fastifyPlugin(async (fastify) => {
     version: string,
     username: string,
   ) => {
-    lastCursor = new Range(0, 0, 0, 0);
+    if (currentCursor.end.line == lastCursor.end.line) {
+      return;
+    }
     try {
       await axios
         .create({
@@ -142,7 +142,6 @@ export default fastifyPlugin(async (fastify) => {
     lastCursor = currentCursor;
     currentCursor = cursor;
   };
-  
 });
 
 declare module 'fastify' {
