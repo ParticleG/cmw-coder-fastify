@@ -18,6 +18,13 @@ const secondClassMap = new Map<HuggingFaceModelType | LinseerModelType, string>(
     [LinseerModelType.Linseer_CClsw, 'LS13B'],
   ],
 );
+const productLineMap = new Map<LinseerModelType, string >(
+  [
+    [LinseerModelType.Linseer, "H3C 通用"],
+    [LinseerModelType.Linseer_CClsw, "交换机产品线"],
+    [LinseerModelType.Linseer_SR88Driver, ""], //高端路由模型还未推出，产品线字段暂时返回空，后续更新删除该注释
+  ]
+);
 
 const constructData = (
   completion: string,
@@ -42,6 +49,9 @@ const constructData = (
     user: username,
     userType: 'USER',
   };
+  if (modelType as LinseerModelType) {
+    Object.assign(basicData, {productline: productLineMap.get(modelType)})
+  }
 
   return [
     {
